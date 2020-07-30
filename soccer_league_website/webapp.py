@@ -43,12 +43,13 @@ def add_new_people():
         query = 'INSERT INTO bsg_people (fname, lname, age, homeworld) VALUES (%s,%s,%s,%s)'
         data = (fname, lname, age, homeworld)
         execute_query(db_connection, query, data)
-        return ('Person added!')
+        return 'Person added!'
 
 
 @webapp.route('/')
 def index():
-    return "<p>Are you looking for /db_test or /hello or <a href='/browse_bsg_people'>/browse_bsg_people</a> or /add_new_people or /update_people/id or /delete_people/id </p>"
+    return "<p>Are you looking for /db_test or /hello or <a href='/browse_bsg_people'>/browse_bsg_people</a> or " \
+           "/add_new_people or /update_people/id or /delete_people/id </p> "
 
 
 @webapp.route('/home')
@@ -87,7 +88,7 @@ def update_people(id):
         people_query = 'SELECT id, fname, lname, homeworld, age from bsg_people WHERE id = %s' % (id)
         people_result = execute_query(db_connection, people_query).fetchone()
 
-        if people_result == None:
+        if people_result is None:
             return "No such person found!"
 
         planets_query = 'SELECT id, name from bsg_planets'
@@ -113,13 +114,13 @@ def update_people(id):
 
 @webapp.route('/delete_people/<int:id>')
 def delete_people(id):
-    '''deletes a person with the given id'''
+    """deletes a person with the given id"""
     db_connection = connect_to_database()
     query = "DELETE FROM bsg_people WHERE id = %s"
     data = (id,)
 
     result = execute_query(db_connection, query, data)
-    return (str(result.rowcount) + "row deleted")
+    return str(result.rowcount) + "row deleted"
 
 
 # To start flask locally
