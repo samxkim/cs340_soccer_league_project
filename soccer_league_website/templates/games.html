@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Games</title>
+    <link href="index.css" rel="stylesheet">
+</head>
+<body>
+<header>
+    <ul class="navigationbar">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="coaches.html">Coaches</a></li>
+        <li><a href="teams.html">Teams</a></li>
+        <li><a href="players.html">Players</a></li>
+        <li><a href="referees.html">Referees</a></li>
+        <li><a href="games.html">Games</a></li>
+    </ul>
+</header>
+<br>
+<h1>Games</h1>
+<p>This is where games can be added (teams, referees, etc) to the database</p>
+<form method="POST" action="/results">
+    <label for="dateinput">Date: </label><input type="date" placeholder="Date" id="dateinput" name="dateinput">
+    <label for="homeinput">Home Team: </label><input type="text" placeholder="Home Team" id="homeinput" name="homeinput">
+    <label for="awayinput">Away Team: </label><input type="text" placeholder="Away Team" id="awayinput" name="awayinput">
+    <label for="refereeinput">Referee: </label><input type="text" placeholder="Referee" id="refereeinput" name="refereeinput">
+    <input type="submit" value="add" onclick="submit()">
+</form>
+<br>
+<table>
+    <tr>
+        <th>Home Team</th>
+        <th>Away Team</th>
+        <th>Date</th>
+        <th>Home Team Score</th>
+        <th>Away Team Score</th>
+        <th>Cancelled?</th>
+        <th>Completed?</th>
+        <th>Referee #1</th>
+        <th>Referee #2</th>
+        <th>Referee #3</th>
+        <th>Edit</th>
+        <th>Save</th>
+        <th>Delete</th>
+    </tr>
+    <tr>
+        <th>The Teamsters</th>
+        <th>Team 2</th>
+        <th>03-06-2020</th>
+        <th>1</th>
+        <th>5</th>
+        <th>False</th>
+        <th>False</th>
+        <th>Microsoft Chrome</th>
+        <th>N/A</th>
+        <th>N/A</th>
+        <th><button>Edit</button></th>
+        <th><button>Save</button></th>
+        <th><button>Delete</button></th>
+    </tr>
+</table>
+<button>Games Requiring Additional Team</button>
+<button>Games Requiring Referee</button>
+</body>
+</html>

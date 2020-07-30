@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Coaches</title>
+    <link href="index.css" rel="stylesheet">
+</head>
+<body>
+<header>
+    <ul class="navigationbar">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="coaches.html">Coaches</a></li>
+        <li><a href="teams.html">Teams</a></li>
+        <li><a href="players.html">Players</a></li>
+        <li><a href="referees.html">Referees</a></li>
+        <li><a href="games.html">Games</a></li>
+    </ul>
+</header>
+<br>
+<h1>Coaches</h1>
+<p>This is where coaches can be added to the database</p>
+<form method="POST" action="/results">
+    <label for="fninput">First Name: </label><input type="text" placeholder="First Name" id="fninput" name="fninput">
+    <label for="lninput">Last Name: </label><input type="text" placeholder="Last Name" id="lninput" name="lninput">
+    <label for="phonenum">Phone Number: </label><input type="text" placeholder="Phone #" id="phonenum" name="phonenum">
+    <label for="email">Email: </label><input type="email" placeholder="Email" id="email" name="email">
+    <label for="team">Team: </label><input type="text" placeholder="Team" id="team" name="team">
+    <input type="submit" value="add" onclick="submit()">
+</form>
+<br>
+<table>
+    <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Phone Number</th>
+        <th>Email</th>
+        <th>Team</th>
+        <th>Edit</th>
+        <th>Save</th>
+        <th>Delete</th>
+    </tr>
+    <tr>
+        <th>Daniel</th>
+        <th>Cortez</th>
+        <th>525-980-5555</th>
+        <th>danielcortez@fakemail.edu</th>
+        <th>the Teamsters</th>
+        <th><button>Edit</button></th>
+        <th><button>Save</button></th>
+        <th><button>Delete</button></th>
+    </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,22 @@
+.navigationbar {
+    display: block;
+}
+
+li {
+    float: left;
+    display: inline;
+}
+
+ul {
+    width: auto;
+}
+
+a {
+    display: block;
+    padding: 10px;
+    text-decoration: underline;
+}
+
+table, th {
+    border: 1px solid black;
+}
