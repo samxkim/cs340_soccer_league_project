@@ -1,17 +1,20 @@
 from flask import Flask, render_template
 from flask import request, redirect
 from db_connector.db_connector import connect_to_database, execute_query
-#create the web application
+
+# create the web application
 webapp = Flask(__name__)
 
-#provide a route where requests on the web application can be addressed
+
+# provide a route where requests on the web application can be addressed
 @webapp.route('/hello')
-#provide a view (fancy name for a function) which responds to any requests on this route
+# provide a view (fancy name for a function) which responds to any requests on this route
 def hello():
     return "Hello World!"
 
+
 @webapp.route('/browse_bsg_people')
-#the name of this function is just a cosmetic thing
+# the name of this function is just a cosmetic thing
 def browse_people():
     print("Fetching and rendering people web page")
     db_connection = connect_to_database()
@@ -20,7 +23,8 @@ def browse_people():
     print(result)
     return render_template('people_browse.html', rows=result)
 
-@webapp.route('/add_new_people', methods=['POST','GET'])
+
+@webapp.route('/add_new_people', methods=['POST', 'GET'])
 def add_new_people():
     db_connection = connect_to_database()
     if request.method == 'GET':
@@ -28,7 +32,7 @@ def add_new_people():
         result = execute_query(db_connection, query).fetchall()
         print(result)
 
-        return render_template('people_add_new.html', planets = result)
+        return render_template('people_add_new.html', planets=result)
     elif request.method == 'POST':
         print("Add new people!")
         fname = request.form['fname']
@@ -41,9 +45,11 @@ def add_new_people():
         execute_query(db_connection, query, data)
         return ('Person added!')
 
+
 @webapp.route('/')
 def index():
     return "<p>Are you looking for /db_test or /hello or <a href='/browse_bsg_people'>/browse_bsg_people</a> or /add_new_people or /update_people/id or /delete_people/id </p>"
+
 
 @webapp.route('/home')
 def home():
@@ -58,7 +64,8 @@ def home():
     result = execute_query(db_connection, query)
     for r in result:
         print(f"{r[0]}, {r[1]}")
-    return render_template('home.html', result = result)
+    return render_template('home.html', result=result)
+
 
 @webapp.route('/db_test')
 def test_database_connection():
@@ -68,15 +75,16 @@ def test_database_connection():
     result = execute_query(db_connection, query)
     return render_template('db_test.html', rows=result)
 
-#display update form and process any updates, using the same function
-@webapp.route('/update_people/<int:id>', methods=['POST','GET'])
+
+# display update form and process any updates, using the same function
+@webapp.route('/update_people/<int:id>', methods=['POST', 'GET'])
 def update_people(id):
     print('In the function')
     db_connection = connect_to_database()
-    #display existing data
+    # display existing data
     if request.method == 'GET':
         print('The GET request')
-        people_query = 'SELECT id, fname, lname, homeworld, age from bsg_people WHERE id = %s'  % (id)
+        people_query = 'SELECT id, fname, lname, homeworld, age from bsg_people WHERE id = %s' % (id)
         people_result = execute_query(db_connection, people_query).fetchone()
 
         if people_result == None:
@@ -86,7 +94,7 @@ def update_people(id):
         planets_results = execute_query(db_connection, planets_query).fetchall()
 
         print('Returning')
-        return render_template('people_update.html', planets = planets_results, person = people_result)
+        return render_template('people_update.html', planets=planets_results, person=people_result)
     elif request.method == 'POST':
         print('The POST request')
         character_id = request.form['character_id']
@@ -102,6 +110,7 @@ def update_people(id):
 
         return redirect('/browse_bsg_people')
 
+
 @webapp.route('/delete_people/<int:id>')
 def delete_people(id):
     '''deletes a person with the given id'''
@@ -111,3 +120,8 @@ def delete_people(id):
 
     result = execute_query(db_connection, query, data)
     return (str(result.rowcount) + "row deleted")
+
+
+# To start flask locally
+if __name__ == '__main__':
+    webapp.run(debug=True)
