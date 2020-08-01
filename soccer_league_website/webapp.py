@@ -89,6 +89,31 @@ def teams():
     return render_template('teams.html', rows=result)
 
 
+@webapp.route('/games')
+def games():
+    db_connection = connect_to_database()
+
+    query = "select team1.teamName as 'Home Team', " \
+            "team2.teamName as 'Away Team', " \
+            "gameDateTime as Date, " \
+            "homeTeamScore as 'Home Team Score', " \
+            "awayTeamScore as 'Away Team Score', " \
+            "canceled as 'Canceled?', " \
+            "completed as 'Completed?', " \
+            "(select GROUP_CONCAT(CONCAT(firstName,' ',lastName) SEPARATOR ', ') from Referees r " \
+            "join Games_Referees g where r.refereeID = g.refereeID " \
+            "and gameID = game.gameID " \
+            "group by gameID) as Referees " \
+            "from Games game " \
+            "join Teams team1 on game.homeTeamID = team1.teamID " \
+            "join Teams team2 on game.awayTeamID = team2.teamID " \
+            "order by game.gameID;"
+    result = execute_query(db_connection, query)
+    for r in result:
+        print(r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7])
+    return render_template('games.html', rows=result)
+
+
 @webapp.route('/db_test')
 def test_database_connection():
     print("Executing a sample query on the database using the credentials from db_credentials.py")

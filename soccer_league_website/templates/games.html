@@ -8,12 +8,12 @@
 <body>
 <header>
     <ul class="navigationbar">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="coaches.html">Coaches</a></li>
-        <li><a href="teams.html">Teams</a></li>
-        <li><a href="players.html">Players</a></li>
-        <li><a href="referees.html">Referees</a></li>
-        <li><a href="games.html">Games</a></li>
+        <li><a href="/index.html">Home</a></li>
+        <li><a href="/coaches.html">Coaches</a></li>
+        <li><a href="http://flip3.engr.oregonstate.edu:33322/teams">Teams</a></li>
+        <li><a href="/players.html">Players</a></li>
+        <li><a href="/referees.html">Referees</a></li>
+        <li><a href="http://flip3.engr.oregonstate.edu:33322/games">Games</a></li>
     </ul>
 </header>
 <br>
@@ -36,28 +36,26 @@
         <th>Away Team Score</th>
         <th>Cancelled?</th>
         <th>Completed?</th>
-        <th>Referee #1</th>
-        <th>Referee #2</th>
-        <th>Referee #3</th>
+        <th>Referees</th>
         <th>Edit</th>
         <th>Save</th>
         <th>Delete</th>
     </tr>
+    {% for row in rows %}
     <tr>
-        <th>The Teamsters</th>
-        <th>Team 2</th>
-        <th>03-06-2020</th>
-        <th>1</th>
-        <th>5</th>
-        <th>False</th>
-        <th>False</th>
-        <th>Microsoft Chrome</th>
-        <th>N/A</th>
-        <th>N/A</th>
+    	<td>{{ row[0] }}</td>
+    	<td>{{ row[1] }}</td>
+    	<td>{{ row[2] }}</td>
+    	<td>{{ row[3] }}</td>
+    	<td>{{ row[4] }}</td>
+    	<td>{{ row[5] }}</td>
+    	<td>{{ row[6] }}</td>
+    	<td>{{ row[7] }}</td>
         <th><button>Edit</button></th>
         <th><button>Save</button></th>
         <th><button>Delete</button></th>
     </tr>
+    {% endfor %}
 </table>
 <button>Games Requiring Additional Team</button>
 <button>Games Requiring Referee</button>
