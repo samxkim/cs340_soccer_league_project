@@ -25,26 +25,19 @@
 </form>
 <br>
 <table>
-    <tr>
-        <th>Name</th>
-        <th>Wins</th>
-        <th>Losses</th>
-        <th>Ties</th>
-        <th>Roster</th>
-        <th>Edit</th>
-        <th>Save</th>
-        <th>Delete</th>
-    </tr>
-    <tr>
-        <th>The Teamsters</th>
-        <th>3</th>
-        <th>2</th>
-        <th>0</th>
-        <th><button>Roster</button></th>
-        <th><button>Edit</button></th>
-        <th><button>Save</button></th>
-        <th><button>Delete</button></th>
-    </tr>
+	<tr>
+		<th>Name</th>
+		<th>Wins</th>
+		<th>Losses</th>
+		<th>Ties</th>
+    {% for row in rows %}
+    	<tr>
+        	<td>{{ row[1] }}</td>
+        	<td>{{ row[2] }}</td>
+        	<td>{{ row[3] }}</td>
+        	<td>{{ row[4] }}</td>
+    	</tr>
+    {% endfor %}
 </table>
 <button>League Standings</button>
 </body>

@@ -52,6 +52,11 @@ def index():
            "/add_new_people or /update_people/id or /delete_people/id </p> "
 
 
+@webapp.route('/test')
+def test():
+    return 'Test'
+
+
 @webapp.route('/home')
 def home():
     db_connection = connect_to_database()
@@ -66,6 +71,22 @@ def home():
     for r in result:
         print(f"{r[0]}, {r[1]}")
     return render_template('home.html', result=result)
+
+
+@webapp.route('/teams')
+def teams():
+    db_connection = connect_to_database()
+    query = "select teamID as ID, teamName as Team, (SELECT count(*) FROM Games " \
+            "where (homeTeamID = teamID and homeTeamScore > awayTeamScore) " \
+            "or (awayTeamID = teamID and awayTeamScore > homeTeamScore)) as Wins, " \
+            "(SELECT count(*) FROM Games where (homeTeamID = teamID and homeTeamScore < awayTeamScore) " \
+            "or (awayTeamID = teamID and awayTeamScore < homeTeamScore)) as Losses, (SELECT count(*) " \
+            "FROM Games where (homeTeamID = teamID and homeTeamScore = awayTeamScore) " \
+            " or (awayTeamID = teamID and awayTeamScore = homeTeamScore)) as Ties from Teams;"
+    result = execute_query(db_connection, query)
+    for r in result:
+        print(r[0], r[1])
+    return render_template('teams.html', rows=result)
 
 
 @webapp.route('/db_test')
