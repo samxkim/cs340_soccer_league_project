@@ -51,10 +51,8 @@ def coaches():
         query = "SELECT firstName, lastName, phone, email, team.teamName " \
             "as 'Team' FROM Coaches JOIN Teams team on Coaches.teamID = team.teamID"
         result = execute_query(db_connection, query).fetchall()
-        print(result)
         return render_template('coaches.html', Coaches_Rows=result)
     elif request.method == 'POST':
-        print("Add new people!")
         fname = request.form['fninput']
         lname = request.form['lninput']
         phone = request.form['phonenum']
@@ -68,13 +66,26 @@ def coaches():
         return render_template('add_coaches_successful.html')
 
 
-@webapp.route('/players')
+@webapp.route('/players', methods=['POST', 'GET'])
 def players():
     db_connection = connect_to_database()
-    query = "SELECT firstName, lastName, phone, email, team.teamName as 'Team' " \
-            "FROM Players JOIN Teams team on Players.teamID = team.teamID"
-    result = execute_query(db_connection, query).fetchall()
-    return render_template('players.html', Players_Rows=result)
+    if request.method == 'GET':
+        query = "SELECT firstName, lastName, phone, email, team.teamName as 'Team' " \
+                "FROM Players JOIN Teams team on Players.teamID = team.teamID"
+        result = execute_query(db_connection, query).fetchall()
+        return render_template('players.html', Players_Rows=result)
+    elif request.method == 'POST':
+        fname = request.form['fninput']
+        lname = request.form['lninput']
+        phone = request.form['phonenum']
+        email = request.form['email']
+        team = request.form['team']
+
+        query = 'INSERT INTO Players (firstName, lastName, phone, email, teamID) ' \
+                'VALUES (%s,%s,%s,%s,(SELECT teamID FROM Teams WHERE teamName = %s))'
+        data = (fname, lname, phone, email, team)
+        execute_query(db_connection, query, data)
+        return render_template('add_players_successful.html')
 
 
 @webapp.route('/referees')
