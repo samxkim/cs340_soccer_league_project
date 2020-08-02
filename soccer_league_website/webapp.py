@@ -48,8 +48,8 @@ def index():
 def coaches():
     db_connection = connect_to_database()
     if request.method == 'GET':
-        query = "SELECT firstName, lastName, phone, email, team.teamName " \
-            "as 'Team' FROM Coaches JOIN Teams team on Coaches.teamID = team.teamID"
+        query = "SELECT coachID, firstName, lastName, phone, email, team.teamName " \
+                "as 'Team' FROM Coaches JOIN Teams team on Coaches.teamID = team.teamID"
         result = execute_query(db_connection, query).fetchall()
         return render_template('coaches.html', Coaches_Rows=result)
     elif request.method == 'POST':
@@ -64,15 +64,35 @@ def coaches():
         data = (fname, lname, phone, email, team)
         execute_query(db_connection, query, data)
         prev_page = 'coaches'
-        object_added = 'Player'
+        object_added = 'Coach'
         return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
+
+
+@webapp.route('/delete_coaches/<int:coach_id>')
+def delete_coaches(coach_id):
+    """deletes a coach with the given id"""
+    db_connection = connect_to_database()
+    name_query = "SELECT firstName FROM Coaches WHERE coachID = %s"
+    name_data = (coach_id,)
+    coach_firstname = execute_query(db_connection, name_query, name_data).fetchone()
+    print(coach_firstname)
+
+    query = "DELETE FROM Coaches WHERE coachID = %s"
+    data = (coach_id,)
+
+    result = execute_query(db_connection, query, data)
+
+    prev_page = 'coaches'
+    object_added = 'Coach'
+    return render_template('deleted_successful.html', Previous_Page=prev_page, obj_add=object_added,
+                           obj_name=coach_firstname)
 
 
 @webapp.route('/players', methods=['POST', 'GET'])
 def players():
     db_connection = connect_to_database()
     if request.method == 'GET':
-        query = "SELECT firstName, lastName, phone, email, team.teamName as 'Team' " \
+        query = "SELECT playerID, firstName, lastName, phone, email, team.teamName as 'Team' " \
                 "FROM Players JOIN Teams team on Players.teamID = team.teamID"
         result = execute_query(db_connection, query).fetchall()
         return render_template('players.html', Players_Rows=result)
@@ -96,7 +116,7 @@ def players():
 def referees():
     db_connection = connect_to_database()
     if request.method == 'GET':
-        query = "SELECT firstName, lastName, phone, email FROM Referees"
+        query = "SELECT refereeID, firstName, lastName, phone, email FROM Referees"
         result = execute_query(db_connection, query).fetchall()
         return render_template('referees.html', Referee_Rows=result)
     elif request.method == 'POST':
@@ -114,8 +134,9 @@ def referees():
         return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
 
 
-@webapp.route('/teams')
+@webapp.route('/teams', methods=['POST', 'GET'])
 def teams():
+    # TODO ADD FUNCTIONALITY
     db_connection = connect_to_database()
     query = "select teamID as ID, teamName as Team, (SELECT count(*) FROM Games " \
             "where (homeTeamID = teamID and homeTeamScore > awayTeamScore) " \
@@ -132,6 +153,7 @@ def teams():
 
 @webapp.route('/games')
 def games():
+    # TODO ADD FUNCTIONALITY
     db_connection = connect_to_database()
 
     query = "select team1.teamName as 'Home Team', " \

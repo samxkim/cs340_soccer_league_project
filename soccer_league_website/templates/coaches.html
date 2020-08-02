@@ -41,14 +41,14 @@
     </tr>
     {% for row in Coaches_Rows %}
     <tr>
-        <td>{{ row[0] }}</td>
         <td>{{ row[1] }}</td>
         <td>{{ row[2] }}</td>
         <td>{{ row[3] }}</td>
         <td>{{ row[4] }}</td>
+        <td>{{ row[5] }}</td>
         <th><button>Edit</button></th>
         <th><button>Save</button></th>
-        <th><button>Delete</button></th>
+        <th><input type="button" name="Delete" value="Delete" onclick="window.location = '/delete_coaches/{{row[0]}}'"></th>
     </tr>
     {% endfor %}
 </table>
