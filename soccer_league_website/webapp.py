@@ -174,6 +174,15 @@ def delete_people(id):
     return str(result.rowcount) + "row deleted"
 
 
+@webapp.errorhandler(404)
+def heh_error():
+    return render_template('404.html'), 404
+
+
+@webapp.errorhandler(500)
+def another_heh_error():
+    return render_template('500.html'), 500
+
 # To start flask locally
 if __name__ == '__main__':
     webapp.run(debug=True)
