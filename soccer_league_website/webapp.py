@@ -64,7 +64,8 @@ def coaches():
 @webapp.route('/players')
 def players():
     db_connection = connect_to_database()
-    query = "SELECT firstName, lastName, phone, email, teamName FROM Players JOIN Teams on Teams.teamName = teamName;"
+    query = "SELECT firstName, lastName, phone, email, team.teamName as 'Team' " \
+            "FROM Players JOIN Teams team on Players.teamID = team.teamID"
     result = execute_query(db_connection, query).fetchall()
     return render_template('players.html', Players_Rows=result)
 
