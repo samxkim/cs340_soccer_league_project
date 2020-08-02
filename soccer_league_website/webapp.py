@@ -6,13 +6,6 @@ from db_connector.db_connector import connect_to_database, execute_query
 webapp = Flask(__name__)
 
 
-# provide a route where requests on the web application can be addressed
-@webapp.route('/hello')
-# provide a view (fancy name for a function) which responds to any requests on this route
-def hello():
-    return "Hello World!"
-
-
 @webapp.route('/browse_bsg_people')
 # the name of this function is just a cosmetic thing
 def browse_people():
@@ -175,13 +168,14 @@ def delete_people(id):
 
 
 @webapp.errorhandler(404)
-def heh_error():
+def heh_error(e):
     return render_template('404.html'), 404
 
 
 @webapp.errorhandler(500)
-def another_heh_error():
+def another_heh_error(e):
     return render_template('500.html'), 500
+
 
 # To start flask locally
 if __name__ == '__main__':
