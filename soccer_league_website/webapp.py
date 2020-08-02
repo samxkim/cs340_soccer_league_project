@@ -70,6 +70,14 @@ def players():
     return render_template('players.html', Players_Rows=result)
 
 
+@webapp.route('/referees')
+def referees():
+    db_connection = connect_to_database()
+    query = "SELECT firstName, lastName, phone, email FROM Referees"
+    result = execute_query(db_connection, query).fetchall()
+    return render_template('referees.html', Referee_Rows=result)
+
+
 @webapp.route('/teams')
 def teams():
     db_connection = connect_to_database()

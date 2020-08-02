@@ -37,15 +37,17 @@
         <th>Save</th>
         <th>Delete</th>
     </tr>
+    {% for row in Referee_Rows %}
     <tr>
-        <th>Microsoft</th>
-        <th>Chrome</th>
-        <th>616-090-5454</th>
-        <th>chrome@fakemail.edu</th>
+        <th>{{ row[0] }}</th>
+        <th>{{ row[1] }}</th>
+        <th>{{ row[2] }}</th>
+        <th>{{ row[3] }}</th>
         <th><button>Edit</button></th>
         <th><button>Save</button></th>
         <th><button>Delete</button></th>
     </tr>
+    {% endfor %}
 </table>
 </body>
 </html>
