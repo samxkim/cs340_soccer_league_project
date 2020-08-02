@@ -63,7 +63,9 @@ def coaches():
                 'VALUES (%s,%s,%s,%s,(SELECT teamID FROM Teams WHERE teamName = %s))'
         data = (fname, lname, phone, email, team)
         execute_query(db_connection, query, data)
-        return render_template('add_coaches_successful.html')
+        prev_page = 'coaches'
+        object_added = 'Player'
+        return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
 
 
 @webapp.route('/players', methods=['POST', 'GET'])
@@ -85,15 +87,31 @@ def players():
                 'VALUES (%s,%s,%s,%s,(SELECT teamID FROM Teams WHERE teamName = %s))'
         data = (fname, lname, phone, email, team)
         execute_query(db_connection, query, data)
-        return render_template('add_players_successful.html')
+        prev_page = 'players'
+        object_added = 'Player'
+        return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
 
 
-@webapp.route('/referees')
+@webapp.route('/referees', methods=['POST', 'GET'])
 def referees():
     db_connection = connect_to_database()
-    query = "SELECT firstName, lastName, phone, email FROM Referees"
-    result = execute_query(db_connection, query).fetchall()
-    return render_template('referees.html', Referee_Rows=result)
+    if request.method == 'GET':
+        query = "SELECT firstName, lastName, phone, email FROM Referees"
+        result = execute_query(db_connection, query).fetchall()
+        return render_template('referees.html', Referee_Rows=result)
+    elif request.method == 'POST':
+        fname = request.form['fninput']
+        lname = request.form['lninput']
+        phone = request.form['phonenum']
+        email = request.form['email']
+
+        query = 'INSERT INTO Referees (firstName, lastName, phone, email) ' \
+                'VALUES (%s,%s,%s,%s)'
+        data = (fname, lname, phone, email)
+        execute_query(db_connection, query, data)
+        prev_page = 'referees'
+        object_added = 'Referee'
+        return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
 
 
 @webapp.route('/teams')
