@@ -39,16 +39,18 @@
         <th>Save</th>
         <th>Delete</th>
     </tr>
+    {% for row in Players_Rows %}
     <tr>
-        <th>Mozilla</th>
-        <th>Firefox</th>
-        <th>616-090-5454</th>
-        <th>mozilla@fakemail.edu</th>
-        <th>The Teamsters</th>
+        <th>{{ row[0] }}</th>
+        <th>{{ row[1] }}</th>
+        <th>{{ row[2] }}</th>
+        <th>{{ row[3] }}</th>
+        <th>{{ row[4] }}</th>
         <th><button>Edit</button></th>
         <th><button>Save</button></th>
         <th><button>Delete</button></th>
     </tr>
+    {% endfor %}
 </table>
 </body>
 </html>

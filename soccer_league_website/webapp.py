@@ -48,29 +48,25 @@ def add_new_people():
 
 @webapp.route('/')
 def index():
-    return "<p>Are you looking for /db_test or /hello or <a href='/browse_bsg_people'>/browse_bsg_people</a> or " \
-           "/add_new_people or /update_people/id or /delete_people/id </p> "
+    return render_template('index.html')
 
 
-@webapp.route('/test')
-def test():
-    return 'Test'
-
-
-@webapp.route('/home')
-def home():
+@webapp.route('/coaches')
+def coaches():
     db_connection = connect_to_database()
-    query = "DROP TABLE IF EXISTS diagnostic;"
-    execute_query(db_connection, query)
-    query = "CREATE TABLE diagnostic(id INT PRIMARY KEY, text VARCHAR(255) NOT NULL);"
-    execute_query(db_connection, query)
-    query = "INSERT INTO diagnostic (text) VALUES ('MySQL is working');"
-    execute_query(db_connection, query)
-    query = "SELECT * from diagnostic;"
-    result = execute_query(db_connection, query)
-    for r in result:
-        print(f"{r[0]}, {r[1]}")
-    return render_template('home.html', result=result)
+    query = "SELECT firstName, lastName, phone, email, team.teamName " \
+            "as 'Team' FROM Coaches JOIN Teams team on Coaches.teamID = team.teamID"
+    result = execute_query(db_connection, query).fetchall()
+    print(result)
+    return render_template('coaches.html', Coaches_Rows=result)
+
+
+@webapp.route('/players')
+def players():
+    db_connection = connect_to_database()
+    query = "SELECT firstName, lastName, phone, email, teamName FROM Players JOIN Teams on Teams.teamName = teamName;"
+    result = execute_query(db_connection, query).fetchall()
+    return render_template('players.html', Players_Rows=result)
 
 
 @webapp.route('/teams')
