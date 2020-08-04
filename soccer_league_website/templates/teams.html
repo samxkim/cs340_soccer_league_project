@@ -19,9 +19,9 @@
 <br>
 <h1>Teams</h1>
 <p>This is where teams can be added to the database</p>
-<form method="POST" action="/results">
+<form id="addteam" method="POST" action="/teams">
     <label for="teaminput">Team Name: </label><input type="text" placeholder="Team Name" id="teaminput" name="teaminput">
-    <input type="submit" value="add" onclick="submit()">
+    <input type="submit" value="Submit">
 </form>
 <br>
 <table>
@@ -42,7 +42,7 @@
         	<td>{{ row[4] }}</td>
             <th><button>Edit</button></th>
             <th><button>Save</button></th>
-            <th><button>Delete</button></th>
+            <th><input type="button" name="Delete" value="Delete" onclick="window.location = '/delete_teams/{{row[0]}}'"></th>
     	</tr>
     {% endfor %}
 </table>

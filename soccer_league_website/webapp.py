@@ -136,46 +136,96 @@ def referees():
 
 @webapp.route('/teams', methods=['POST', 'GET'])
 def teams():
-    # TODO ADD FUNCTIONALITY
     db_connection = connect_to_database()
-    query = "select teamID as ID, teamName as Team, (SELECT count(*) FROM Games " \
-            "where (homeTeamID = teamID and homeTeamScore > awayTeamScore) " \
-            "or (awayTeamID = teamID and awayTeamScore > homeTeamScore)) as Wins, " \
-            "(SELECT count(*) FROM Games where (homeTeamID = teamID and homeTeamScore < awayTeamScore) " \
-            "or (awayTeamID = teamID and awayTeamScore < homeTeamScore)) as Losses, (SELECT count(*) " \
-            "FROM Games where (homeTeamID = teamID and homeTeamScore = awayTeamScore) " \
-            " or (awayTeamID = teamID and awayTeamScore = homeTeamScore)) as Ties from Teams;"
-    result = execute_query(db_connection, query)
-    for r in result:
-        print(r[0], r[1])
-    return render_template('teams.html', rows=result)
+    if request.method == 'GET':
+        query = "select teamID as ID, teamName as Team, (SELECT count(*) FROM Games " \
+                "where (homeTeamID = teamID and homeTeamScore > awayTeamScore) " \
+                "or (awayTeamID = teamID and awayTeamScore > homeTeamScore)) as Wins, " \
+                "(SELECT count(*) FROM Games where (homeTeamID = teamID and homeTeamScore < awayTeamScore) " \
+                "or (awayTeamID = teamID and awayTeamScore < homeTeamScore)) as Losses, (SELECT count(*) " \
+                "FROM Games where (homeTeamID = teamID and homeTeamScore = awayTeamScore) " \
+                "or (awayTeamID = teamID and awayTeamScore = homeTeamScore)) as Ties from Teams;"
+        result = execute_query(db_connection, query).fetchall()
+        return render_template('teams.html', rows=result)
+    elif request.method == 'POST':
+        tname = request.form['teaminput']
 
+        query = 'INSERT INTO Teams (teamName) ' \
+                'VALUES (%s)'
+        data = (tname,)
+        execute_query(db_connection, query, data)
+        prev_page = 'teams'
+        object_added = 'Team'
+        return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
 
-@webapp.route('/games')
+@webapp.route('/delete_teams/<int:id>')
+def delete_teams(id):
+    """deletes a team with the given id"""
+    db_connection = connect_to_database()
+
+    data = (id,)
+    query = 'UPDATE Coaches set teamID = null where teamID = %s'
+    execute_query(db_connection, query, data)
+    query = 'UPDATE Games set homeTeamID = null where homeTeamID = %s'
+    execute_query(db_connection, query, data)
+    query = 'UPDATE Games set awayTeamID = null where awayTeamID = %s'
+    execute_query(db_connection, query, data)
+    query = 'UPDATE Players set teamID = null where teamID = %s'
+    execute_query(db_connection, query, data)
+
+    name_query = "SELECT teamName FROM Teams WHERE teamID = %s"
+    team_name = execute_query(db_connection, name_query, data).fetchone()
+    print(team_name)
+
+    query = "DELETE FROM Teams WHERE teamID = %s"
+    data = (id,)
+
+    result = execute_query(db_connection, query, data)
+
+    prev_page = 'teams'
+    object_added = 'Team'
+    return render_template('deleted_successful.html', Previous_Page=prev_page, obj_add=object_added,
+                           obj_name=team_name)
+@webapp.route('/games', methods=['POST', 'GET'])
 def games():
-    # TODO ADD FUNCTIONALITY
     db_connection = connect_to_database()
+    if request.method == 'GET':
+        query = "select gameID, team1.teamName as 'Home Team', " \
+                "team2.teamName as 'Away Team', " \
+                "gameDateTime as Date, " \
+                "homeTeamScore as 'Home Team Score', " \
+                "awayTeamScore as 'Away Team Score', " \
+                "canceled as 'Canceled?', " \
+                "completed as 'Completed?', " \
+                "(select GROUP_CONCAT(CONCAT(firstName,' ',lastName) SEPARATOR ', ') from Referees r " \
+                "join Games_Referees g where r.refereeID = g.refereeID " \
+                "and gameID = game.gameID " \
+                "group by gameID) as Referees " \
+                "from Games game " \
+                "join Teams team1 on game.homeTeamID = team1.teamID " \
+                "join Teams team2 on game.awayTeamID = team2.teamID " \
+                "order by game.gameID;"
+        result = execute_query(db_connection, query).fetchall()
+        return render_template('games.html', rows=result)
+    elif request.method == 'POST':
+        pass
 
-    query = "select team1.teamName as 'Home Team', " \
-            "team2.teamName as 'Away Team', " \
-            "gameDateTime as Date, " \
-            "homeTeamScore as 'Home Team Score', " \
-            "awayTeamScore as 'Away Team Score', " \
-            "canceled as 'Canceled?', " \
-            "completed as 'Completed?', " \
-            "(select GROUP_CONCAT(CONCAT(firstName,' ',lastName) SEPARATOR ', ') from Referees r " \
-            "join Games_Referees g where r.refereeID = g.refereeID " \
-            "and gameID = game.gameID " \
-            "group by gameID) as Referees " \
-            "from Games game " \
-            "join Teams team1 on game.homeTeamID = team1.teamID " \
-            "join Teams team2 on game.awayTeamID = team2.teamID " \
-            "order by game.gameID;"
-    result = execute_query(db_connection, query)
-    for r in result:
-        print(r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7])
-    return render_template('games.html', rows=result)
+@webapp.route('/delete_games/<int:game_id>')
+def delete_games(game_id):
+    """deletes a game with the given id"""
+    db_connection = connect_to_database()
+    data = (game_id,)
 
+    query = 'DELETE FROM Games_Referees WHERE gameID = %s'
+    execute_query(db_connection, query, data)
+    query = "DELETE FROM Games WHERE gameID = %s"
+
+    result = execute_query(db_connection, query, data)
+
+    prev_page = 'games'
+    object_added = 'Game'
+    return render_template('deleted_successful.html', Previous_Page=prev_page, obj_add=object_added,
+                           obj_name='')
 
 @webapp.route('/db_test')
 def test_database_connection():

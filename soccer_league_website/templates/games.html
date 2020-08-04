@@ -43,7 +43,6 @@
     </tr>
     {% for row in rows %}
     <tr>
-    	<td>{{ row[0] }}</td>
     	<td>{{ row[1] }}</td>
     	<td>{{ row[2] }}</td>
     	<td>{{ row[3] }}</td>
@@ -51,9 +50,10 @@
     	<td>{{ row[5] }}</td>
     	<td>{{ row[6] }}</td>
     	<td>{{ row[7] }}</td>
+    	<td>{{ row[8] }}</td>
         <th><button>Edit</button></th>
         <th><button>Save</button></th>
-        <th><button>Delete</button></th>
+        <th><input type="button" name="Delete" value="Delete" onclick="window.location = '/delete_games/{{row[0]}}'"></th>
     </tr>
     {% endfor %}
 </table>
