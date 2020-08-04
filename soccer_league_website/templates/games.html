@@ -21,9 +21,21 @@
 <p>This is where games can be added (teams, referees, etc) to the database</p>
 <form method="POST" action="/results">
     <label for="dateinput">Date: </label><input type="date" placeholder="Date" id="dateinput" name="dateinput">
-    <label for="homeinput">Home Team: </label><input type="text" placeholder="Home Team" id="homeinput" name="homeinput">
-    <label for="awayinput">Away Team: </label><input type="text" placeholder="Away Team" id="awayinput" name="awayinput">
-    <label for="refereeinput">Referee: </label><input type="text" placeholder="Referee" id="refereeinput" name="refereeinput">
+    <label for="homeinput">Home Team: </label><select placeholder="Home Team" id="homeinput" name="homeinput">
+        {% for t in homeTeams %}
+          <option value="{{ t[0] }}">{{ t[1] }}</option>
+        {% endfor %}
+    </select>
+    <label for="awayinput">Away Team: </label><select placeholder="Away Team" id="awayinput" name="awayinput">
+        {% for t in awayTeams %}
+          <option value="{{ t[0] }}">{{ t[1] }}</option>
+        {% endfor %}
+    </select>
+    <label for="refereeinput">Referee: </label><select placeholder="Referee" id="refereeinput" name="refereeinput">
+        {% for r in refereeList %}
+          <option value="{{ r[0] }}">{{ r[2] }}, {{ r[1] }} </option>
+        {% endfor %}
+    </select>
     <input type="submit" value="add" onclick="submit()">
 </form>
 <br>

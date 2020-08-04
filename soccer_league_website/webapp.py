@@ -206,7 +206,14 @@ def games():
                 "join Teams team2 on game.awayTeamID = team2.teamID " \
                 "order by game.gameID;"
         result = execute_query(db_connection, query).fetchall()
-        return render_template('games.html', rows=result)
+        query = "SELECT teamID, teamName from Teams;"
+        home_teams = execute_query(db_connection, query).fetchall()
+        query = "SELECT teamID, teamName from Teams;"
+        away_teams = execute_query(db_connection, query).fetchall()
+        query = "SELECT refereeID, firstName, LastName from Referees;"
+        refs = execute_query(db_connection, query).fetchall()
+        return render_template('games.html', rows=result, homeTeams=home_teams, awayTeams=away_teams,
+                               refereeList=refs)
     elif request.method == 'POST':
         pass
 
