@@ -19,7 +19,7 @@
 <br>
 <h1>Games</h1>
 <p>This is where games can be added (teams, referees, etc) to the database</p>
-<form method="POST" action="/results">
+<form method="POST" action="/games">
     <label for="dateinput">Date: </label><input type="date" placeholder="Date" id="dateinput" name="dateinput">
     <label for="homeinput">Home Team: </label><select placeholder="Home Team" id="homeinput" name="homeinput">
         {% for t in homeTeams %}

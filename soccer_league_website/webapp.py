@@ -158,6 +158,7 @@ def teams():
         object_added = 'Team'
         return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
 
+
 @webapp.route('/delete_teams/<int:id>')
 def delete_teams(id):
     """deletes a team with the given id"""
@@ -186,6 +187,8 @@ def delete_teams(id):
     object_added = 'Team'
     return render_template('deleted_successful.html', Previous_Page=prev_page, obj_add=object_added,
                            obj_name=team_name)
+
+
 @webapp.route('/games', methods=['POST', 'GET'])
 def games():
     db_connection = connect_to_database()
@@ -215,7 +218,22 @@ def games():
         return render_template('games.html', rows=result, homeTeams=home_teams, awayTeams=away_teams,
                                refereeList=refs)
     elif request.method == 'POST':
-        pass
+        date = request.form['dateinput']
+        hometeam = int(request.form['homeinput'])
+        awayteam = int(request.form['awayinput'])
+        referee = int(request.form['refereeinput'])
+        query = "INSERT INTO Games (gameDateTime, homeTeamID, homeTeamScore, awayTeamID, awayTeamScore, canceled, " \
+                "completed) VALUES (%s, %s, 0, %s, 0, 0, 0);"
+        data = (date, hometeam, awayteam)
+        execute_query(db_connection, query, data)
+        prev_page = 'games'
+        object_added = 'Game'
+        query = "INSERT INTO Games_Referees (gameID, refereeID) VALUES ((SELECT gameID from " \
+                "Games where homeTeamID = %s and awayTeamID = %s and gameDateTime = %s), %s);"
+        data = (hometeam, awayteam, date, referee)
+        execute_query(db_connection, query, data)
+        return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
+
 
 @webapp.route('/delete_games/<int:game_id>')
 def delete_games(game_id):
