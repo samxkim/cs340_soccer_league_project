@@ -226,6 +226,43 @@ def referees():
         return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
 
 
+# @webapp.route('/update_referees/<int:referee_id>', methods=['POST', 'GET'])
+# def update_players(referee_id):
+#     db_connection = connect_to_database()
+#     # display existing data
+#     if request.method == 'GET':
+#         player_query = "SELECT playerID, firstName, lastName, phone, email, team.teamName as 'Team' " \
+#                       "FROM Players JOIN Teams team on Players.teamID = team.teamID " \
+#                        "WHERE playerID = %s" % player_id
+#         player_result = execute_query(db_connection, player_query).fetchone()
+#
+#         team_query = 'SELECT teamID, teamName FROM Teams'
+#         team_results = execute_query(db_connection, team_query).fetchall()
+#
+#         prev_page = 'players'
+#         object_name = 'Players'
+#         return render_template('coachplayer_update.html', Previous_Page=prev_page,
+#                                obj_main=player_result, teams=team_results, obj_name=object_name)
+#     elif request.method == 'POST':
+#         playerid = request.form['PlayersID']
+#         fname = request.form['fninput']
+#         lname = request.form['lninput']
+#         phone = request.form['phonenum']
+#         email = request.form['email']
+#         team = request.form['current_team']
+#
+#         query = "UPDATE Players SET firstName = %s, lastName = %s, phone = %s, email = %s, teamID = %s " \
+#                 "WHERE playerID = %s"
+#         data = (fname, lname, phone, email, team, playerid)
+#         result = execute_query(db_connection, query, data)
+#
+#         prev_page = 'players'
+#         object_name = 'Players'
+#
+#         return render_template('updated_successful.html', Previous_Page=prev_page,
+#                                obj_main=fname, obj_name=object_name)
+
+
 @webapp.route('/delete_referees/<int:referee_id>')
 def delete_referees(referee_id):
     """deletes a referee with the given id"""
