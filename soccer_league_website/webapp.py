@@ -86,7 +86,6 @@ def update_coaches(coach_id):
         return render_template('coachplayer_update.html', Previous_Page=prev_page,
                                obj_main=coach_result, teams=team_results, obj_name=object_name)
     elif request.method == 'POST':
-        print('The POST request')
         coachid = request.form['CoachesID']
         fname = request.form['fninput']
         lname = request.form['lninput']
@@ -166,20 +165,24 @@ def update_players(player_id):
         object_name = 'Players'
         return render_template('coachplayer_update.html', Previous_Page=prev_page,
                                obj_main=player_result, teams=team_results, obj_name=object_name)
-    # elif request.method == 'POST':
-    #     print('The POST request')
-    #     character_id = request.form['character_id']
-    #     fname = request.form['fname']
-    #     lname = request.form['lname']
-    #     age = request.form['age']
-    #     homeworld = request.form['homeworld']
-    #
-    #     query = "UPDATE bsg_people SET fname = %s, lname = %s, age = %s, homeworld = %s WHERE id = %s"
-    #     data = (fname, lname, age, homeworld, character_id)
-    #     result = execute_query(db_connection, query, data)
-    #     print(str(result.rowcount) + " row(s) updated")
-    #
-    #     return redirect('/browse_bsg_people')
+    elif request.method == 'POST':
+        playerid = request.form['PlayersID']
+        fname = request.form['fninput']
+        lname = request.form['lninput']
+        phone = request.form['phonenum']
+        email = request.form['email']
+        team = request.form['current_team']
+
+        query = "UPDATE Players SET firstName = %s, lastName = %s, phone = %s, email = %s, teamID = %s " \
+                "WHERE playerID = %s"
+        data = (fname, lname, phone, email, team, playerid)
+        result = execute_query(db_connection, query, data)
+
+        prev_page = 'players'
+        object_name = 'Players'
+
+        return render_template('updated_successful.html', Previous_Page=prev_page,
+                               obj_main=fname, obj_name=object_name)
 
 
 @webapp.route('/delete_players/<int:player_id>')
