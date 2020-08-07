@@ -46,7 +46,7 @@
         <td>{{ row[3] }}</td>
         <td>{{ row[4] }}</td>
         <td>{{ row[5] }}</td>
-        <th><button>Edit</button></th>
+        <th><input type="button" name="Edit" value="Edit" onclick="window.location = '/update_coaches/{{row[0]}}'"></th>
         <th><button>Save</button></th>
         <th><input type="button" name="Delete" value="Delete" onclick="window.location = '/delete_coaches/{{row[0]}}'"></th>
     </tr>
