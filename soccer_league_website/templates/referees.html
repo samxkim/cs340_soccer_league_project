@@ -45,7 +45,7 @@
         <td>{{ row[4] }}</td>
         <th><button>Edit</button></th>
         <th><button>Save</button></th>
-        <th><button>Delete</button></th>
+        <th><input type="button" name="Delete" value="Delete" onclick="window.location = '/delete_referees/{{row[0]}}'"></th>
     </tr>
     {% endfor %}
 </table>
