@@ -70,27 +70,19 @@ def coaches():
 
 @webapp.route('/update_coaches/<int:coach_id>', methods=['POST', 'GET'])
 def update_coaches(coach_id):
-    print('In the function')
     db_connection = connect_to_database()
     # display existing data
     if request.method == 'GET':
-        print('The GET request')
         coach_query = "SELECT coachID, firstName, lastName, phone, email, team.teamName " \
                       "as 'Team' FROM Coaches JOIN Teams team on Coaches.teamID = team.teamID " \
                       "WHERE coachID = %s" % coach_id
         coach_result = execute_query(db_connection, coach_query).fetchone()
 
-        print(coach_result)
-
-        if coach_result is None:
-            return "No such coach found!"
-
         team_query = 'SELECT teamID, teamName FROM Teams'
         team_results = execute_query(db_connection, team_query).fetchall()
 
-        print('Returning')
         prev_page = 'coaches'
-        object_name = 'Coach'
+        object_name = 'Coaches'
         return render_template('coachplayer_update.html', Previous_Page=prev_page,
                                obj_main=coach_result, teams=team_results, obj_name=object_name)
     # elif request.method == 'POST':
@@ -150,6 +142,39 @@ def players():
         prev_page = 'players'
         object_added = 'Player'
         return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
+
+
+@webapp.route('/update_players/<int:player_id>', methods=['POST', 'GET'])
+def update_players(player_id):
+    db_connection = connect_to_database()
+    # display existing data
+    if request.method == 'GET':
+        player_query = "SELECT playerID, firstName, lastName, phone, email, team.teamName as 'Team' " \
+                      "FROM Players JOIN Teams team on Players.teamID = team.teamID " \
+                       "WHERE playerID = %s" % player_id
+        player_result = execute_query(db_connection, player_query).fetchone()
+
+        team_query = 'SELECT teamID, teamName FROM Teams'
+        team_results = execute_query(db_connection, team_query).fetchall()
+
+        prev_page = 'players'
+        object_name = 'Players'
+        return render_template('coachplayer_update.html', Previous_Page=prev_page,
+                               obj_main=player_result, teams=team_results, obj_name=object_name)
+    # elif request.method == 'POST':
+    #     print('The POST request')
+    #     character_id = request.form['character_id']
+    #     fname = request.form['fname']
+    #     lname = request.form['lname']
+    #     age = request.form['age']
+    #     homeworld = request.form['homeworld']
+    #
+    #     query = "UPDATE bsg_people SET fname = %s, lname = %s, age = %s, homeworld = %s WHERE id = %s"
+    #     data = (fname, lname, age, homeworld, character_id)
+    #     result = execute_query(db_connection, query, data)
+    #     print(str(result.rowcount) + " row(s) updated")
+    #
+    #     return redirect('/browse_bsg_people')
 
 
 @webapp.route('/delete_players/<int:player_id>')
