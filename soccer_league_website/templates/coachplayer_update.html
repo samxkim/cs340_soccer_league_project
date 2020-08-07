@@ -6,7 +6,7 @@
 </head>
 <body>
 <h3>Update {{ obj_name }}:</h3>
-<form id="update_{{ obj_name }}" action="/update_{{ obj_name }}es/{{ obj_main[0] }}" method="post">
+<form id="update_{{ obj_name }}" action="/update_{{ Previous_Page }}/{{ obj_main[0] }}" method="post">
     <input type="hidden" name="{{ obj_name }}ID" value="{{ obj_main[0] }}">
     First name: <input type="text" name="fninput" value="{{ obj_main[1] }}"><br>
     Last name: <input type="text" name="lninput" value="{{ obj_main[2] }}"><br>
