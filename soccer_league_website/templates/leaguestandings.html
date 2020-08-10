@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Team Roster</title>
+    <link href="{{ url_for('static', filename = 'css/index.css') }}" rel="stylesheet">
+</head>
+<body>
+<header>
+    <ul class="navigationbar">
+        <li><a href="{{ url_for('index') }}">Home</a></li>
+        <li><a href="{{ url_for('coaches') }}">Coaches</a></li>
+        <li><a href="{{ url_for('teams') }}">Teams</a></li>
+        <li><a href="{{ url_for('players') }}">Players</a></li>
+        <li><a href="{{ url_for('referees') }}">Referees</a></li>
+        <li><a href="{{ url_for('games') }}">Games</a></li>
+    </ul>
+</header>
+<br>
+<h1>League Standings</h1>
+<br>
+<table>
+    <tr>
+        <th>Team</th>
+        <th>Points</th>
+    </tr>
+    {% for result in results %}
+        <tr>
+            <td>{{ result[0] }}</td>
+            <td>{{ result[1] }}</td>
+        </tr>
+    {% endfor %}
+</table>
+</body>
+</html>

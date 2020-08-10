@@ -43,9 +43,10 @@
             <th><button>Edit</button></th>
             <th><button>Save</button></th>
             <th><input type="button" name="Delete" value="Delete" onclick="window.location = '/delete_teams/{{row[0]}}'"></th>
+            <th><input type="button" name="Roster" value="Roster" onclick="window.location = '/roster/{{row[0]}}'" target="_blank"></th>
     	</tr>
     {% endfor %}
 </table>
-<button>League Standings</button>
+<input type="button" name="LeagueStandings" value="LeagueStandings" onclick="window.location = '/leaguestandings'"
 </body>
 </html>

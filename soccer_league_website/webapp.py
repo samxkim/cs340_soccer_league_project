@@ -144,7 +144,8 @@ def teams():
                 "(SELECT count(*) FROM Games where (homeTeamID = teamID and homeTeamScore < awayTeamScore) " \
                 "or (awayTeamID = teamID and awayTeamScore < homeTeamScore)) as Losses, (SELECT count(*) " \
                 "FROM Games where (homeTeamID = teamID and homeTeamScore = awayTeamScore) " \
-                "or (awayTeamID = teamID and awayTeamScore = homeTeamScore)) as Ties from Teams;"
+                "or (awayTeamID = teamID and awayTeamScore = homeTeamScore)) as Ties from Teams " \
+                "ORDER by teamName;"
         result = execute_query(db_connection, query).fetchall()
         return render_template('teams.html', rows=result)
     elif request.method == 'POST':
@@ -187,6 +188,33 @@ def delete_teams(id):
     object_added = 'Team'
     return render_template('deleted_successful.html', Previous_Page=prev_page, obj_add=object_added,
                            obj_name=team_name)
+
+
+@webapp.route('/roster/<int:id>', methods=['GET'])
+def roster(id):
+    """Returns a team roster page"""
+    if request.method == 'GET':
+        db_connection = connect_to_database()
+        data = (id,)
+        name_query = 'SELECT teamName FROM Teams WHERE teamID = %s'
+        team = execute_query(db_connection, name_query, data).fetchone()
+        coach_query = 'SELECT * from Coaches WHERE teamID = %s'
+        coach = execute_query(db_connection, coach_query, data).fetchall()
+        player_query = 'SELECT * FROM Players WHERE teamID = %s'
+        players = execute_query(db_connection, player_query, data).fetchall()
+        return render_template('roster.html', team=team, coaches=coach, players=players)
+
+
+@webapp.route('/leaguestandings', methods=['GET'])
+def leaguestandings():
+    if request.method == 'GET':
+        db_connection = connect_to_database()
+        query = 'select teamName as Team, (SELECT count(*) FROM Games where (homeTeamID = teamID ' \
+                'and homeTeamScore > awayTeamScore) or (awayTeamID = teamID and awayTeamScore > homeTeamScore))*3 + ' \
+                '(SELECT count(*) FROM Games 	where (homeTeamID = teamID and homeTeamScore = awayTeamScore) or ' \
+                '(awayTeamID = teamID and awayTeamScore = homeTeamScore)) as Points from Teams order by Points desc;'
+        teamlist = execute_query(db_connection, query).fetchall()
+        return render_template('leaguestandings.html', results=teamlist)
 
 
 @webapp.route('/games', methods=['POST', 'GET'])
