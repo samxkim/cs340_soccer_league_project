@@ -49,7 +49,7 @@ def coaches():
     db_connection = connect_to_database()
     if request.method == 'GET':
         query = "SELECT coachID, firstName, lastName, phone, email, team.teamName " \
-                "as 'Team' FROM Coaches JOIN Teams team on Coaches.teamID = team.teamID"
+                "as 'Team' FROM Coaches LEFT JOIN Teams team on Coaches.teamID = team.teamID"
         result = execute_query(db_connection, query).fetchall()
         return render_template('coaches.html', Coaches_Rows=result)
     elif request.method == 'POST':
@@ -129,7 +129,7 @@ def players():
     db_connection = connect_to_database()
     if request.method == 'GET':
         query = "SELECT playerID, firstName, lastName, phone, email, team.teamName as 'Team' " \
-                "FROM Players JOIN Teams team on Players.teamID = team.teamID"
+                "FROM Players LEFT JOIN Teams team on Players.teamID = team.teamID"
         result = execute_query(db_connection, query).fetchall()
         return render_template('players.html', Players_Rows=result)
     elif request.method == 'POST':
