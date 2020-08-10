@@ -68,6 +68,43 @@ def coaches():
         return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
 
 
+@webapp.route('/update_coaches/<int:coach_id>', methods=['POST', 'GET'])
+def update_coaches(coach_id):
+    db_connection = connect_to_database()
+    # display existing data
+    if request.method == 'GET':
+        coach_query = "SELECT coachID, firstName, lastName, phone, email, team.teamName " \
+                      "as 'Team' FROM Coaches JOIN Teams team on Coaches.teamID = team.teamID " \
+                      "WHERE coachID = %s" % coach_id
+        coach_result = execute_query(db_connection, coach_query).fetchone()
+
+        team_query = 'SELECT teamID, teamName FROM Teams'
+        team_results = execute_query(db_connection, team_query).fetchall()
+
+        prev_page = 'coaches'
+        object_name = 'Coaches'
+        return render_template('coachplayer_update.html', Previous_Page=prev_page,
+                               obj_main=coach_result, teams=team_results, obj_name=object_name)
+    elif request.method == 'POST':
+        coachid = request.form['CoachesID']
+        fname = request.form['fninput']
+        lname = request.form['lninput']
+        phone = request.form['phonenum']
+        email = request.form['email']
+        team = request.form['current_team']
+
+        query = "UPDATE Coaches SET firstName = %s, lastName = %s, phone = %s, email = %s, teamID = %s " \
+                "WHERE coachID = %s"
+        data = (fname, lname, phone, email, team, coachid)
+        result = execute_query(db_connection, query, data)
+
+        prev_page = 'coaches'
+        object_name = 'Coaches'
+
+        return render_template('updated_successful.html', Previous_Page=prev_page,
+                               obj_main=fname, obj_name=object_name)
+
+
 @webapp.route('/delete_coaches/<int:coach_id>')
 def delete_coaches(coach_id):
     """deletes a coach with the given id"""
@@ -75,7 +112,6 @@ def delete_coaches(coach_id):
     name_query = "SELECT firstName FROM Coaches WHERE coachID = %s"
     name_data = (coach_id,)
     coach_firstname = execute_query(db_connection, name_query, name_data).fetchone()
-    print(coach_firstname)
 
     query = "DELETE FROM Coaches WHERE coachID = %s"
     data = (coach_id,)
@@ -112,6 +148,62 @@ def players():
         return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
 
 
+@webapp.route('/update_players/<int:player_id>', methods=['POST', 'GET'])
+def update_players(player_id):
+    db_connection = connect_to_database()
+    # display existing data
+    if request.method == 'GET':
+        player_query = "SELECT playerID, firstName, lastName, phone, email, team.teamName as 'Team' " \
+                      "FROM Players JOIN Teams team on Players.teamID = team.teamID " \
+                       "WHERE playerID = %s" % player_id
+        player_result = execute_query(db_connection, player_query).fetchone()
+
+        team_query = 'SELECT teamID, teamName FROM Teams'
+        team_results = execute_query(db_connection, team_query).fetchall()
+
+        prev_page = 'players'
+        object_name = 'Players'
+        return render_template('coachplayer_update.html', Previous_Page=prev_page,
+                               obj_main=player_result, teams=team_results, obj_name=object_name)
+    elif request.method == 'POST':
+        playerid = request.form['PlayersID']
+        fname = request.form['fninput']
+        lname = request.form['lninput']
+        phone = request.form['phonenum']
+        email = request.form['email']
+        team = request.form['current_team']
+
+        query = "UPDATE Players SET firstName = %s, lastName = %s, phone = %s, email = %s, teamID = %s " \
+                "WHERE playerID = %s"
+        data = (fname, lname, phone, email, team, playerid)
+        result = execute_query(db_connection, query, data)
+
+        prev_page = 'players'
+        object_name = 'Players'
+
+        return render_template('updated_successful.html', Previous_Page=prev_page,
+                               obj_main=fname, obj_name=object_name)
+
+
+@webapp.route('/delete_players/<int:player_id>')
+def delete_players(player_id):
+    """deletes a player with the given id"""
+    db_connection = connect_to_database()
+    name_query = "SELECT firstName FROM Players WHERE playerID = %s"
+    name_data = (player_id,)
+    player_firstname = execute_query(db_connection, name_query, name_data).fetchone()
+
+    query = "DELETE FROM Players WHERE playerID = %s"
+    data = (player_id,)
+
+    result = execute_query(db_connection, query, data)
+
+    prev_page = 'players'
+    object_added = 'Player'
+    return render_template('deleted_successful.html', Previous_Page=prev_page, obj_add=object_added,
+                           obj_name=player_firstname)
+
+
 @webapp.route('/referees', methods=['POST', 'GET'])
 def referees():
     db_connection = connect_to_database()
@@ -132,6 +224,62 @@ def referees():
         prev_page = 'referees'
         object_added = 'Referee'
         return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
+
+
+# @webapp.route('/update_referees/<int:referee_id>', methods=['POST', 'GET'])
+# def update_players(referee_id):
+#     db_connection = connect_to_database()
+#     # display existing data
+#     if request.method == 'GET':
+#         player_query = "SELECT playerID, firstName, lastName, phone, email, team.teamName as 'Team' " \
+#                       "FROM Players JOIN Teams team on Players.teamID = team.teamID " \
+#                        "WHERE playerID = %s" % player_id
+#         player_result = execute_query(db_connection, player_query).fetchone()
+#
+#         team_query = 'SELECT teamID, teamName FROM Teams'
+#         team_results = execute_query(db_connection, team_query).fetchall()
+#
+#         prev_page = 'players'
+#         object_name = 'Players'
+#         return render_template('coachplayer_update.html', Previous_Page=prev_page,
+#                                obj_main=player_result, teams=team_results, obj_name=object_name)
+#     elif request.method == 'POST':
+#         playerid = request.form['PlayersID']
+#         fname = request.form['fninput']
+#         lname = request.form['lninput']
+#         phone = request.form['phonenum']
+#         email = request.form['email']
+#         team = request.form['current_team']
+#
+#         query = "UPDATE Players SET firstName = %s, lastName = %s, phone = %s, email = %s, teamID = %s " \
+#                 "WHERE playerID = %s"
+#         data = (fname, lname, phone, email, team, playerid)
+#         result = execute_query(db_connection, query, data)
+#
+#         prev_page = 'players'
+#         object_name = 'Players'
+#
+#         return render_template('updated_successful.html', Previous_Page=prev_page,
+#                                obj_main=fname, obj_name=object_name)
+
+
+@webapp.route('/delete_referees/<int:referee_id>')
+def delete_referees(referee_id):
+    """deletes a referee with the given id"""
+    db_connection = connect_to_database()
+    name_query = "SELECT firstName FROM Referees WHERE refereeID = %s"
+    name_data = (referee_id,)
+    referee_firstname = execute_query(db_connection, name_query, name_data).fetchone()
+
+    query = "DELETE FROM Referees WHERE refereeID = %s"
+    data = (referee_id,)
+
+    result = execute_query(db_connection, query, data)
+
+    prev_page = 'referees'
+    object_added = 'Referee'
+    return render_template('deleted_successful.html', Previous_Page=prev_page, obj_add=object_added,
+                           obj_name=referee_firstname)
 
 
 @webapp.route('/teams', methods=['POST', 'GET'])
@@ -280,6 +428,7 @@ def delete_games(game_id):
     return render_template('deleted_successful.html', Previous_Page=prev_page, obj_add=object_added,
                            obj_name='')
 
+
 @webapp.route('/db_test')
 def test_database_connection():
     print("Executing a sample query on the database using the credentials from db_credentials.py")
@@ -346,5 +495,5 @@ def another_heh_error(e):
 
 
 # To start flask locally
-# if __name__ == '__main__':
-#     webapp.run(debug=True)
+if __name__ == '__main__':
+    webapp.run(debug=True)
