@@ -31,7 +31,6 @@
 		<th>Losses</th>
 		<th>Ties</th>
         <th>Edit</th>
-        <th>Save</th>
         <th>Delete</th>
     </tr>
     {% for row in rows %}
@@ -41,7 +40,6 @@
         	<td>{{ row[3] }}</td>
         	<td>{{ row[4] }}</td>
             <th><button>Edit</button></th>
-            <th><button>Save</button></th>
             <th><input type="button" name="Delete" value="Delete" onclick="window.location = '/delete_teams/{{row[0]}}'"></th>
             <th><input type="button" name="Roster" value="Roster" onclick="window.location = '/roster/{{row[0]}}'" target="_blank"></th>
     	</tr>

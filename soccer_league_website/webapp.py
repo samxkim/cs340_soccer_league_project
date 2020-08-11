@@ -315,13 +315,19 @@ def teams():
     elif request.method == 'POST':
         tname = request.form['teaminput']
 
-        query = 'INSERT INTO Teams (teamName) ' \
-                'VALUES (%s)'
-        data = (tname,)
-        execute_query(db_connection, query, data)
-        prev_page = 'teams'
-        object_added = 'Team'
-        return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
+        tname_verify = "SELECT count(teamName) FROM Teams WHERE teamName = '%s'" % tname
+        tname_verify_result = execute_query(db_connection, tname_verify).fetchone()
+        if tname_verify_result[0] == 0:
+            query = 'INSERT INTO Teams (teamName) ' \
+                    'VALUES (%s)'
+            data = (tname,)
+            execute_query(db_connection, query, data)
+            prev_page = 'teams'
+            object_added = 'Team'
+            return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
+        else:
+            prev_page = 'teams'
+            return render_template('duplicate_team_entry.html', Previous_Page=prev_page)
 
 
 @webapp.route('/delete_teams/<int:id>')
