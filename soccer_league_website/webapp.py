@@ -330,6 +330,34 @@ def teams():
             return render_template('duplicate_team_entry.html', Previous_Page=prev_page)
 
 
+@webapp.route('/update_teams/<int:team_id>', methods=['POST', 'GET'])
+def update_teams(team_id):
+    db_connection = connect_to_database()
+
+    if request.method == 'GET':
+        teams_query = 'SELECT teamID, teamName FROM Teams where teamID = %s'
+        data = (team_id,)
+        teams_result = execute_query(db_connection, teams_query, data).fetchone()
+
+        prev_page = 'teams'
+        object_name = 'Teams'
+        return render_template('teams_update.html', Previous_Page=prev_page, obj_main=teams_result,
+                               obj_name=object_name)
+    elif request.method == 'POST':
+        teamID = request.form['teamID']
+        teamName = request.form['teamName']
+
+        query = 'UPDATE Teams SET teamName = %s WHERE teamID = %s'
+        data = (teamName, teamID)
+        execute_query(db_connection, query, data)
+
+        prev_page = 'teams'
+        object_name = 'Teams'
+
+        return render_template('updated_successful.html', Previous_Page=prev_page, obj_main=teamName,
+                               obj_name=object_name)
+
+
 @webapp.route('/delete_teams/<int:id>')
 def delete_teams(id):
     """deletes a team with the given id"""

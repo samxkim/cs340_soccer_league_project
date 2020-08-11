@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update {{ obj_name }}</title>
+</head>
+<body>
+<h3>Update {{ obj_name }}:</h3>
+<form id="update_{{ obj_name }}" action="/update_{{ Previous_Page }}/{{ obj_main[0] }}" method="post">
+    <input type="hidden" name="teamID" value="{{ obj_main[0] }}">
+    Team name: <input type="text" name="teamName" value="{{ obj_main[1] }}"><br>
+    <input type="submit" value="Submit">
+    <a href="{{ url_for(Previous_Page) }}">Back</a>
+</form>
+<br/>
+</body>
+</html>
