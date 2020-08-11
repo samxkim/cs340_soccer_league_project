@@ -108,11 +108,13 @@ def update_coaches(coach_id):
         email = request.form['email']
         team = request.form['current_team']
 
-        phone_verify = "SELECT count(phone) FROM Coaches WHERE phone = '%s'" % phone
+        phone_verify = "SELECT count(phone) FROM Coaches WHERE phone = '%s' AND coachID != %s" % (phone, coachid)
         phone_verify_result = execute_query(db_connection, phone_verify).fetchone()
+        print(phone_verify_result)
 
-        email_verify = "SELECT count(email) FROM Coaches WHERE email = '%s'" % email
+        email_verify = "SELECT count(email) FROM Coaches WHERE email = '%s' AND coachID != %s" % (email, coachid)
         email_verify_result = execute_query(db_connection, email_verify).fetchone()
+        print(email_verify_result)
 
         if phone_verify_result[0] == 0 and email_verify_result[0] == 0:
             query = "UPDATE Coaches SET firstName = %s, lastName = %s, phone = %s, email = %s, teamID = %s " \
