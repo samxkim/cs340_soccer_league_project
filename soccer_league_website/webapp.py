@@ -1,5 +1,6 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, url_for
 from flask import request, redirect
+
 from db_connector.db_connector import connect_to_database, execute_query
 
 # create the web application
@@ -51,7 +52,10 @@ def coaches():
         query = "SELECT coachID, firstName, lastName, phone, email, team.teamName " \
                 "as 'Team' FROM Coaches LEFT JOIN Teams team on Coaches.teamID = team.teamID"
         result = execute_query(db_connection, query).fetchall()
-        return render_template('coaches.html', Coaches_Rows=result)
+
+        team_query = 'SELECT teamID, teamName FROM Teams'
+        team_results = execute_query(db_connection, team_query).fetchall()
+        return render_template('coaches.html', Coaches_Rows=result, teams=team_results)
     elif request.method == 'POST':
         fname = request.form['fninput']
         lname = request.form['lninput']
@@ -59,13 +63,24 @@ def coaches():
         email = request.form['email']
         team = request.form['team']
 
-        query = 'INSERT INTO Coaches (firstName, lastName, phone, email, teamID) ' \
-                'VALUES (%s,%s,%s,%s,(SELECT teamID FROM Teams WHERE teamName = %s))'
-        data = (fname, lname, phone, email, team)
-        execute_query(db_connection, query, data)
-        prev_page = 'coaches'
-        object_added = 'Coach'
-        return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
+        phone_verify = "SELECT count(phone) FROM Coaches WHERE phone = '%s'" % phone
+        phone_verify_result = execute_query(db_connection, phone_verify).fetchone()
+
+        email_verify = "SELECT count(email) FROM Coaches WHERE email = '%s'" % email
+        email_verify_result = execute_query(db_connection, email_verify).fetchone()
+        if phone_verify_result[0] == 0 and email_verify_result[0] == 0:
+            query = 'INSERT INTO Coaches (firstName, lastName, phone, email, teamID) ' \
+                    'VALUES (%s,%s,%s,%s,(SELECT teamID FROM Teams WHERE teamID = %s))'
+            data = (fname, lname, phone, email, team)
+            execute_query(db_connection, query, data)
+
+            prev_page = 'coaches'
+            object_added = 'Coach'
+            return render_template('added_successful.html', Previous_Page=prev_page,
+                                   obj_add=object_added)
+        else:
+            prev_page = 'coaches'
+            return render_template('duplicate_entry.html', Previous_Page=prev_page)
 
 
 @webapp.route('/update_coaches/<int:coach_id>', methods=['POST', 'GET'])
@@ -74,7 +89,7 @@ def update_coaches(coach_id):
     # display existing data
     if request.method == 'GET':
         coach_query = "SELECT coachID, firstName, lastName, phone, email, team.teamName " \
-                      "as 'Team' FROM Coaches JOIN Teams team on Coaches.teamID = team.teamID " \
+                      "as 'Team' FROM Coaches LEFT JOIN Teams team on Coaches.teamID = team.teamID " \
                       "WHERE coachID = %s" % coach_id
         coach_result = execute_query(db_connection, coach_query).fetchone()
 
