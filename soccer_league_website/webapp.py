@@ -108,16 +108,26 @@ def update_coaches(coach_id):
         email = request.form['email']
         team = request.form['current_team']
 
-        query = "UPDATE Coaches SET firstName = %s, lastName = %s, phone = %s, email = %s, teamID = %s " \
-                "WHERE coachID = %s"
-        data = (fname, lname, phone, email, team, coachid)
-        result = execute_query(db_connection, query, data)
+        phone_verify = "SELECT count(phone) FROM Coaches WHERE phone = '%s'" % phone
+        phone_verify_result = execute_query(db_connection, phone_verify).fetchone()
 
-        prev_page = 'coaches'
-        object_name = 'Coaches'
+        email_verify = "SELECT count(email) FROM Coaches WHERE email = '%s'" % email
+        email_verify_result = execute_query(db_connection, email_verify).fetchone()
 
-        return render_template('updated_successful.html', Previous_Page=prev_page,
-                               obj_main=fname, obj_name=object_name)
+        if phone_verify_result[0] == 0 and email_verify_result[0] == 0:
+            query = "UPDATE Coaches SET firstName = %s, lastName = %s, phone = %s, email = %s, teamID = %s " \
+                    "WHERE coachID = %s"
+            data = (fname, lname, phone, email, team, coachid)
+            result = execute_query(db_connection, query, data)
+
+            prev_page = 'coaches'
+            object_name = 'Coaches'
+
+            return render_template('updated_successful.html', Previous_Page=prev_page,
+                                   obj_main=fname, obj_name=object_name)
+        else:
+            prev_page = 'coaches'
+            return render_template('duplicate_entry.html', Previous_Page=prev_page)
 
 
 @webapp.route('/delete_coaches/<int:coach_id>')
