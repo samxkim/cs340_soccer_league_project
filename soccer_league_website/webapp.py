@@ -7,39 +7,6 @@ from db_connector.db_connector import connect_to_database, execute_query
 webapp = Flask(__name__)
 
 
-@webapp.route('/browse_bsg_people')
-# the name of this function is just a cosmetic thing
-def browse_people():
-    print("Fetching and rendering people web page")
-    db_connection = connect_to_database()
-    query = "SELECT fname, lname, homeworld, age, id from bsg_people;"
-    result = execute_query(db_connection, query).fetchall()
-    print(result)
-    return render_template('people_browse.html', rows=result)
-
-
-@webapp.route('/add_new_people', methods=['POST', 'GET'])
-def add_new_people():
-    db_connection = connect_to_database()
-    if request.method == 'GET':
-        query = 'SELECT id, name from bsg_planets'
-        result = execute_query(db_connection, query).fetchall()
-        print(result)
-
-        return render_template('people_add_new.html', planets=result)
-    elif request.method == 'POST':
-        print("Add new people!")
-        fname = request.form['fname']
-        lname = request.form['lname']
-        age = request.form['age']
-        homeworld = request.form['homeworld']
-
-        query = 'INSERT INTO bsg_people (fname, lname, age, homeworld) VALUES (%s,%s,%s,%s)'
-        data = (fname, lname, age, homeworld)
-        execute_query(db_connection, query, data)
-        return 'Person added!'
-
-
 @webapp.route('/')
 def index():
     return render_template('index.html')
@@ -110,11 +77,9 @@ def update_coaches(coach_id):
 
         phone_verify = "SELECT count(phone) FROM Coaches WHERE phone = '%s' AND coachID != %s" % (phone, coachid)
         phone_verify_result = execute_query(db_connection, phone_verify).fetchone()
-        print(phone_verify_result)
 
         email_verify = "SELECT count(email) FROM Coaches WHERE email = '%s' AND coachID != %s" % (email, coachid)
         email_verify_result = execute_query(db_connection, email_verify).fetchone()
-        print(email_verify_result)
 
         if phone_verify_result[0] == 0 and email_verify_result[0] == 0:
             query = "UPDATE Coaches SET firstName = %s, lastName = %s, phone = %s, email = %s, teamID = %s " \
@@ -158,7 +123,11 @@ def players():
         query = "SELECT playerID, firstName, lastName, phone, email, team.teamName as 'Team' " \
                 "FROM Players LEFT JOIN Teams team on Players.teamID = team.teamID"
         result = execute_query(db_connection, query).fetchall()
-        return render_template('players.html', Players_Rows=result)
+
+        team_query = 'SELECT teamID, teamName FROM Teams'
+        team_results = execute_query(db_connection, team_query).fetchall()
+
+        return render_template('players.html', Players_Rows=result, teams=team_results)
     elif request.method == 'POST':
         fname = request.form['fninput']
         lname = request.form['lninput']
@@ -166,13 +135,23 @@ def players():
         email = request.form['email']
         team = request.form['team']
 
-        query = 'INSERT INTO Players (firstName, lastName, phone, email, teamID) ' \
-                'VALUES (%s,%s,%s,%s,(SELECT teamID FROM Teams WHERE teamName = %s))'
-        data = (fname, lname, phone, email, team)
-        execute_query(db_connection, query, data)
-        prev_page = 'players'
-        object_added = 'Player'
-        return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
+        phone_verify = "SELECT count(phone) FROM Players WHERE phone = '%s'" % phone
+        phone_verify_result = execute_query(db_connection, phone_verify).fetchone()
+
+        email_verify = "SELECT count(email) FROM Players WHERE email = '%s'" % email
+        email_verify_result = execute_query(db_connection, email_verify).fetchone()
+
+        if phone_verify_result[0] == 0 and email_verify_result[0] == 0:
+            query = 'INSERT INTO Players (firstName, lastName, phone, email, teamID) ' \
+                    'VALUES (%s,%s,%s,%s,(SELECT teamID FROM Teams WHERE teamID = %s))'
+            data = (fname, lname, phone, email, team)
+            execute_query(db_connection, query, data)
+            prev_page = 'players'
+            object_added = 'Player'
+            return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
+        else:
+            prev_page = 'players'
+            return render_template('duplicate_entry.html', Previous_Page=prev_page)
 
 
 @webapp.route('/update_players/<int:player_id>', methods=['POST', 'GET'])
@@ -181,7 +160,7 @@ def update_players(player_id):
     # display existing data
     if request.method == 'GET':
         player_query = "SELECT playerID, firstName, lastName, phone, email, team.teamName as 'Team' " \
-                      "FROM Players JOIN Teams team on Players.teamID = team.teamID " \
+                      "FROM Players LEFT JOIN Teams team on Players.teamID = team.teamID " \
                        "WHERE playerID = %s" % player_id
         player_result = execute_query(db_connection, player_query).fetchone()
 
@@ -200,16 +179,26 @@ def update_players(player_id):
         email = request.form['email']
         team = request.form['current_team']
 
-        query = "UPDATE Players SET firstName = %s, lastName = %s, phone = %s, email = %s, teamID = %s " \
-                "WHERE playerID = %s"
-        data = (fname, lname, phone, email, team, playerid)
-        result = execute_query(db_connection, query, data)
+        phone_verify = "SELECT count(phone) FROM Players WHERE phone = '%s' AND playerID != %s" % (phone, playerid)
+        phone_verify_result = execute_query(db_connection, phone_verify).fetchone()
 
-        prev_page = 'players'
-        object_name = 'Players'
+        email_verify = "SELECT count(email) FROM Players WHERE email = '%s' AND playerID != %s" % (email, playerid)
+        email_verify_result = execute_query(db_connection, email_verify).fetchone()
 
-        return render_template('updated_successful.html', Previous_Page=prev_page,
-                               obj_main=fname, obj_name=object_name)
+        if phone_verify_result[0] == 0 and email_verify_result[0] == 0:
+            query = "UPDATE Players SET firstName = %s, lastName = %s, phone = %s, email = %s, teamID = %s " \
+                    "WHERE playerID = %s"
+            data = (fname, lname, phone, email, team, playerid)
+            result = execute_query(db_connection, query, data)
+
+            prev_page = 'players'
+            object_name = 'Players'
+
+            return render_template('updated_successful.html', Previous_Page=prev_page,
+                                   obj_main=fname, obj_name=object_name)
+        else:
+            prev_page = 'players'
+            return render_template('duplicate_entry.html', Previous_Page=prev_page)
 
 
 @webapp.route('/delete_players/<int:player_id>')
@@ -454,61 +443,6 @@ def delete_games(game_id):
     object_added = 'Game'
     return render_template('deleted_successful.html', Previous_Page=prev_page, obj_add=object_added,
                            obj_name='')
-
-
-@webapp.route('/db_test')
-def test_database_connection():
-    print("Executing a sample query on the database using the credentials from db_credentials.py")
-    db_connection = connect_to_database()
-    query = "SELECT * from bsg_people;"
-    result = execute_query(db_connection, query)
-    return render_template('db_test.html', rows=result)
-
-
-# display update form and process any updates, using the same function
-@webapp.route('/update_people/<int:id>', methods=['POST', 'GET'])
-def update_people(id):
-    print('In the function')
-    db_connection = connect_to_database()
-    # display existing data
-    if request.method == 'GET':
-        print('The GET request')
-        people_query = 'SELECT id, fname, lname, homeworld, age from bsg_people WHERE id = %s' % (id)
-        people_result = execute_query(db_connection, people_query).fetchone()
-
-        if people_result is None:
-            return "No such person found!"
-
-        planets_query = 'SELECT id, name from bsg_planets'
-        planets_results = execute_query(db_connection, planets_query).fetchall()
-
-        print('Returning')
-        return render_template('people_update.html', planets=planets_results, person=people_result)
-    elif request.method == 'POST':
-        print('The POST request')
-        character_id = request.form['character_id']
-        fname = request.form['fname']
-        lname = request.form['lname']
-        age = request.form['age']
-        homeworld = request.form['homeworld']
-
-        query = "UPDATE bsg_people SET fname = %s, lname = %s, age = %s, homeworld = %s WHERE id = %s"
-        data = (fname, lname, age, homeworld, character_id)
-        result = execute_query(db_connection, query, data)
-        print(str(result.rowcount) + " row(s) updated")
-
-        return redirect('/browse_bsg_people')
-
-
-@webapp.route('/delete_people/<int:id>')
-def delete_people(id):
-    """deletes a person with the given id"""
-    db_connection = connect_to_database()
-    query = "DELETE FROM bsg_people WHERE id = %s"
-    data = (id,)
-
-    result = execute_query(db_connection, query, data)
-    return str(result.rowcount) + "row deleted"
 
 
 @webapp.errorhandler(404)
