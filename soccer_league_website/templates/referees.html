@@ -34,7 +34,6 @@
         <th>Phone Number</th>
         <th>Email</th>
         <th>Edit</th>
-        <th>Save</th>
         <th>Delete</th>
     </tr>
     {% for row in Referee_Rows %}
@@ -43,8 +42,7 @@
         <td>{{ row[2] }}</td>
         <td>{{ row[3] }}</td>
         <td>{{ row[4] }}</td>
-        <th><button>Edit</button></th>
-        <th><button>Save</button></th>
+        <th><input type="button" name="Edit" value="Edit" onclick="window.location = '/update_referees/{{row[0]}}'"></th>
         <th><input type="button" name="Delete" value="Delete" onclick="window.location = '/delete_referees/{{row[0]}}'"></th>
     </tr>
     {% endfor %}

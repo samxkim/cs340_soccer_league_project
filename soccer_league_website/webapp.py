@@ -160,7 +160,7 @@ def update_players(player_id):
     # display existing data
     if request.method == 'GET':
         player_query = "SELECT playerID, firstName, lastName, phone, email, team.teamName as 'Team' " \
-                      "FROM Players LEFT JOIN Teams team on Players.teamID = team.teamID " \
+                       "FROM Players LEFT JOIN Teams team on Players.teamID = team.teamID " \
                        "WHERE playerID = %s" % player_id
         player_result = execute_query(db_connection, player_query).fetchone()
 
@@ -233,50 +233,65 @@ def referees():
         phone = request.form['phonenum']
         email = request.form['email']
 
-        query = 'INSERT INTO Referees (firstName, lastName, phone, email) ' \
-                'VALUES (%s,%s,%s,%s)'
-        data = (fname, lname, phone, email)
-        execute_query(db_connection, query, data)
+        phone_verify = "SELECT count(phone) FROM Referees WHERE phone = '%s'" % phone
+        phone_verify_result = execute_query(db_connection, phone_verify).fetchone()
+
+        email_verify = "SELECT count(email) FROM Referees WHERE email = '%s'" % email
+        email_verify_result = execute_query(db_connection, email_verify).fetchone()
+
+        if phone_verify_result[0] == 0 and email_verify_result[0] == 0:
+            query = 'INSERT INTO Referees (firstName, lastName, phone, email) ' \
+                    'VALUES (%s,%s,%s,%s)'
+            data = (fname, lname, phone, email)
+            execute_query(db_connection, query, data)
+            prev_page = 'referees'
+            object_added = 'Referee'
+            return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
+        else:
+            prev_page = 'referees'
+            return render_template('duplicate_entry.html', Previous_Page=prev_page)
+
+
+@webapp.route('/update_referees/<int:referee_id>', methods=['POST', 'GET'])
+def update_referees(referee_id):
+    db_connection = connect_to_database()
+    # display existing data
+    if request.method == 'GET':
+        referee_query = "SELECT refereeID, firstName, lastName, phone, email " \
+                        "FROM Referees WHERE refereeID = %s" % referee_id
+        referee_result = execute_query(db_connection, referee_query).fetchone()
+
         prev_page = 'referees'
-        object_added = 'Referee'
-        return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
+        object_name = 'Referees'
+        return render_template('referee_update.html', Previous_Page=prev_page,
+                               obj_main=referee_result, obj_name=object_name)
+    elif request.method == 'POST':
+        refereeid = request.form['RefereesID']
+        fname = request.form['fninput']
+        lname = request.form['lninput']
+        phone = request.form['phonenum']
+        email = request.form['email']
 
+        phone_verify = "SELECT count(phone) FROM Referees WHERE phone = '%s' AND refereeID != %s" % (phone, refereeid)
+        phone_verify_result = execute_query(db_connection, phone_verify).fetchone()
 
-# @webapp.route('/update_referees/<int:referee_id>', methods=['POST', 'GET'])
-# def update_players(referee_id):
-#     db_connection = connect_to_database()
-#     # display existing data
-#     if request.method == 'GET':
-#         player_query = "SELECT playerID, firstName, lastName, phone, email, team.teamName as 'Team' " \
-#                       "FROM Players JOIN Teams team on Players.teamID = team.teamID " \
-#                        "WHERE playerID = %s" % player_id
-#         player_result = execute_query(db_connection, player_query).fetchone()
-#
-#         team_query = 'SELECT teamID, teamName FROM Teams'
-#         team_results = execute_query(db_connection, team_query).fetchall()
-#
-#         prev_page = 'players'
-#         object_name = 'Players'
-#         return render_template('coachplayer_update.html', Previous_Page=prev_page,
-#                                obj_main=player_result, teams=team_results, obj_name=object_name)
-#     elif request.method == 'POST':
-#         playerid = request.form['PlayersID']
-#         fname = request.form['fninput']
-#         lname = request.form['lninput']
-#         phone = request.form['phonenum']
-#         email = request.form['email']
-#         team = request.form['current_team']
-#
-#         query = "UPDATE Players SET firstName = %s, lastName = %s, phone = %s, email = %s, teamID = %s " \
-#                 "WHERE playerID = %s"
-#         data = (fname, lname, phone, email, team, playerid)
-#         result = execute_query(db_connection, query, data)
-#
-#         prev_page = 'players'
-#         object_name = 'Players'
-#
-#         return render_template('updated_successful.html', Previous_Page=prev_page,
-#                                obj_main=fname, obj_name=object_name)
+        email_verify = "SELECT count(email) FROM Referees WHERE email = '%s' AND refereeID != %s" % (email, refereeid)
+        email_verify_result = execute_query(db_connection, email_verify).fetchone()
+
+        if phone_verify_result[0] == 0 and email_verify_result[0] == 0:
+            query = "UPDATE Referees SET firstName = %s, lastName = %s, phone = %s, email = %s " \
+                    "WHERE refereeID = %s"
+            data = (fname, lname, phone, email, refereeid)
+            result = execute_query(db_connection, query, data)
+
+            prev_page = 'referees'
+            object_name = 'Referee'
+
+            return render_template('updated_successful.html', Previous_Page=prev_page,
+                                   obj_main=fname, obj_name=object_name)
+        else:
+            prev_page = 'referees'
+            return render_template('duplicate_entry.html', Previous_Page=prev_page)
 
 
 @webapp.route('/delete_referees/<int:referee_id>')
