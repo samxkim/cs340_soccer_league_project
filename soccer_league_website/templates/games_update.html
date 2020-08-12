@@ -9,25 +9,27 @@
 <form id="games_update" action="/games_update/{{ obj_main[0] }}" method="post">
     <input type="hidden" name="gameID" value="{{ obj_main[0] }}">
     Home Team: <select name="current_home_team">
-    {% for team in hometeams %}
-        {% if team[1] == obj_main[1] %}
-            <option selected value="{{ team[0] }}">{{ team[1] }}</option>
-        {% else %}
-            <option value="{{ team[0] }}">{{ team[1] }}</option>
-        {% endif %}
-    {% endfor %}
-</select>
+                    <option value=""></option>
+                    {% for team in hometeams %}
+                        {% if team[1] == obj_main[1] %}
+                            <option selected value="{{ team[0] }}">{{ team[1] }}</option>
+                        {% else %}
+                            <option value="{{ team[0] }}">{{ team[1] }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
     Away Team: <select name="current_away_team">
-    {% for team in awayteams %}
-        {% if team[1] == obj_main[2] %}
-            <option selected value="{{ team[0] }}">{{ team[1] }}</option>
-        {% else %}
-            <option value="{{ team[0] }}">{{ team[1] }}</option>
-        {% endif %}
-    {% endfor %}
-</select>
+                    <option value=""></option>
+                    {% for team in awayteams %}
+                        {% if team[1] == obj_main[2] %}
+                            <option selected value="{{ team[0] }}">{{ team[1] }}</option>
+                        {% else %}
+                            <option value="{{ team[0] }}">{{ team[1] }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
     Date:<input type="date" value="{{ obj_main[3] }}" id="dateinput" name="dateinput">
-<br>
+    <br>
     Home Team Score: <input type="number" name="homescore" value="{{ obj_main[4] }}">
     Away Team Score: <input type="number" name="awayscore" value="{{ obj_main[5] }}">
     <br>

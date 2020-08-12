@@ -511,6 +511,53 @@ def games_needing_teams():
         return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
 
 
+@webapp.route('/games_needing_referee', methods=['POST', 'GET'])
+def games_needing_referee():
+    db_connection = connect_to_database()
+    if request.method == 'GET':
+        query = "select gameID, ifNull(team1.teamName, 'NONE') as 'Home Team', " \
+                "ifNull(team2.teamName, 'NONE') as 'Away Team', " \
+                "gameDateTime as Date, " \
+                "homeTeamScore as 'Home Team Score', " \
+                "awayTeamScore as 'Away Team Score', " \
+                "canceled as 'Canceled?', " \
+                "completed as 'Completed?', " \
+                "(select GROUP_CONCAT(CONCAT(firstName,' ',lastName) SEPARATOR ', ') from Referees r " \
+                "join Games_Referees g where r.refereeID = g.refereeID " \
+                "and gameID = game.gameID " \
+                "group by gameID) as Referees " \
+                "from Games game " \
+                "left join Teams team1 on game.homeTeamID = team1.teamID " \
+                "left join Teams team2 on game.awayTeamID = team2.teamID " \
+                "where gameID not in (SELECT gameID from Games_Referees) " \
+                "order by game.gameID;"
+        result = execute_query(db_connection, query).fetchall()
+        query = "SELECT teamID, teamName from Teams;"
+        home_teams = execute_query(db_connection, query).fetchall()
+        query = "SELECT teamID, teamName from Teams;"
+        away_teams = execute_query(db_connection, query).fetchall()
+        query = "SELECT refereeID, firstName, LastName from Referees;"
+        refs = execute_query(db_connection, query).fetchall()
+        return render_template('games.html', rows=result, homeTeams=home_teams, awayTeams=away_teams,
+                               refereeList=refs)
+    elif request.method == 'POST':
+        date = request.form['dateinput']
+        hometeam = int(request.form['homeinput'])
+        awayteam = int(request.form['awayinput'])
+        referee = int(request.form['refereeinput'])
+        query = "INSERT INTO Games (gameDateTime, homeTeamID, homeTeamScore, awayTeamID, awayTeamScore, canceled, " \
+                "completed) VALUES (%s, %s, 0, %s, 0, 0, 0);"
+        data = (date, hometeam, awayteam)
+        execute_query(db_connection, query, data)
+        prev_page = 'games'
+        object_added = 'Game'
+        query = "INSERT INTO Games_Referees (gameID, refereeID) VALUES ((SELECT gameID from " \
+                "Games where homeTeamID = %s and awayTeamID = %s and gameDateTime = %s), %s);"
+        data = (hometeam, awayteam, date, referee)
+        execute_query(db_connection, query, data)
+        return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
+
+
 @webapp.route('/games_update/<int:game_id>', methods=['POST', 'GET'])
 def games_update(game_id):
     db_connection = connect_to_database()
@@ -571,11 +618,11 @@ def games_update(game_id):
             completed = request.form['completed']
         else:
             completed = 0
-        gameDateTime = request.form['date']
-        query = "UPDATE Games SET homeTeamID = %s, awayTeamID = %s, homeTeamScore = %s, " \
-                "awayTeamScore = %s, canceled = %s, completed = %s, gameDateTime = %s WHERE gameID = %s"
-        data = (homeTeamID, awayTeamID, homeTeamScore, awayTeamScore,
-                canceled, completed, gameDateTime, gameID)
+        date = request.form['dateinput']
+        query = "UPDATE Games SET gameDateTime = %s, homeTeamID = %s, awayTeamID = %s, homeTeamScore = %s, " \
+                "awayTeamScore = %s, canceled = %s, completed = %s WHERE gameID = %s"
+        data = (date, homeTeamID, awayTeamID, homeTeamScore, awayTeamScore,
+                canceled, completed, gameID)
         execute_query(db_connection, query, data)
 
         if int(request.form['referee1']) > 0:
