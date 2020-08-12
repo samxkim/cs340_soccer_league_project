@@ -18,7 +18,11 @@
 </header>
 <br>
 <h1>{{team[0]}}</h1>
-<p>Coach: {{ coaches[0][1] }} {{ coaches[0][2]}}</p>
+<p>Coach: {% if coaches[0] %}
+            {{ coaches[0][1] }} {{ coaches[0][2]}}</p>
+          {% else %}
+            No coach
+          {% endif %}
 <br>
 <p>Players:</p>
 <table>
@@ -28,14 +32,20 @@
         <th>Phone</th>
         <th>Email</th>
     </tr>
-    {% for player in players %}
+    {% if players[0] %}
+        {% for player in players %}
+            <tr>
+                <td>{{ player[1] }}</td>
+                <td>{{ player[2] }}</td>
+                <td>{{ player[3] }}</td>
+                <td>{{ player[4] }}</td>
+            </tr>
+        {% endfor %}
+    {% else %}
         <tr>
-            <td>{{ player[1] }}</td>
-            <td>{{ player[2] }}</td>
-            <td>{{ player[3] }}</td>
-            <td>{{ player[4] }}</td>
+            <td>No players</td>
         </tr>
-    {% endfor %}
+    {% endif %}
 </table>
 </body>
 </html>
