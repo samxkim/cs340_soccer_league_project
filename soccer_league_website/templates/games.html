@@ -50,7 +50,6 @@
         <th>Completed?</th>
         <th>Referees</th>
         <th>Edit</th>
-        <th>Save</th>
         <th>Delete</th>
     </tr>
     {% for row in rows %}
@@ -63,13 +62,12 @@
     	<td>{{ row[6] }}</td>
     	<td>{{ row[7] }}</td>
     	<td>{{ row[8] }}</td>
-        <th><button>Edit</button></th>
-        <th><button>Save</button></th>
+        <th><input type="button" name="Edit" value="Edit" onclick="window.location = '/games_update/{{row[0]}}'"></th>
         <th><input type="button" name="Delete" value="Delete" onclick="window.location = '/delete_games/{{row[0]}}'"></th>
     </tr>
     {% endfor %}
 </table>
-<button>Games Requiring Additional Team</button>
+<input type="button" name="games_needing_teams" value="Games Requring Additional Teams" onclick="window.location = '/games_needing_teams'">
 <button>Games Requiring Referee</button>
 </body>
 </html>
