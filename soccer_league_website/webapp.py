@@ -1,9 +1,9 @@
-from flask import Flask, render_template, url_for
-from flask import request, redirect
+from flask import Flask, render_template
+from flask import request
 
 from db_connector.db_connector import connect_to_database, execute_query
 
-# create the web application
+# Creates Flask instance
 webapp = Flask(__name__)
 
 
@@ -16,13 +16,16 @@ def index():
 def coaches():
     db_connection = connect_to_database()
     if request.method == 'GET':
+        # SQL query to show Coaches
         query = "SELECT coachID, firstName, lastName, phone, email, team.teamName " \
                 "as 'Team' FROM Coaches LEFT JOIN Teams team on Coaches.teamID = team.teamID"
         result = execute_query(db_connection, query).fetchall()
 
+        # SQL query for list of team dropdown
         team_query = 'SELECT teamID, teamName FROM Teams'
         team_results = execute_query(db_connection, team_query).fetchall()
         return render_template('coaches.html', Coaches_Rows=result, teams=team_results)
+    # Insert specific data
     elif request.method == 'POST':
         fname = request.form['fninput']
         lname = request.form['lninput']
@@ -35,8 +38,11 @@ def coaches():
 
         email_verify = "SELECT count(email) FROM Coaches WHERE email = '%s'" % email
         email_verify_result = execute_query(db_connection, email_verify).fetchone()
+
+        # If there are no duplicates of the phone and email
         if phone_verify_result[0] == 0 and email_verify_result[0] == 0:
             if team == "NULL_TEAM":
+                # SQL query if NULL team
                 query = 'INSERT INTO Coaches (firstName, lastName, phone, email, teamID) ' \
                         'VALUES (%s,%s,%s,%s,NULL)'
                 data = (fname, lname, phone, email)
@@ -47,6 +53,7 @@ def coaches():
                 data = (fname, lname, phone, email, team)
                 execute_query(db_connection, query, data)
 
+            # Text passed for next page
             prev_page = 'coaches'
             object_added = 'Coach'
             return render_template('added_successful.html', Previous_Page=prev_page,
@@ -59,7 +66,7 @@ def coaches():
 @webapp.route('/update_coaches/<int:coach_id>', methods=['POST', 'GET'])
 def update_coaches(coach_id):
     db_connection = connect_to_database()
-    # display existing data
+    # Display specific coach data
     if request.method == 'GET':
         coach_query = "SELECT coachID, firstName, lastName, phone, email, team.teamName " \
                       "as 'Team' FROM Coaches LEFT JOIN Teams team on Coaches.teamID = team.teamID " \
@@ -73,6 +80,7 @@ def update_coaches(coach_id):
         object_name = 'Coaches'
         return render_template('coachplayer_update.html', Previous_Page=prev_page,
                                obj_main=coach_result, teams=team_results, obj_name=object_name)
+    # Insert coach data
     elif request.method == 'POST':
         coachid = request.form['CoachesID']
         fname = request.form['fninput']
@@ -117,6 +125,7 @@ def delete_coaches(coach_id):
     name_data = (coach_id,)
     coach_firstname = execute_query(db_connection, name_query, name_data).fetchone()
 
+    # SQL query to delete coach
     query = "DELETE FROM Coaches WHERE coachID = %s"
     data = (coach_id,)
 
@@ -131,6 +140,7 @@ def delete_coaches(coach_id):
 @webapp.route('/players', methods=['POST', 'GET'])
 def players():
     db_connection = connect_to_database()
+    # Display player info
     if request.method == 'GET':
         query = "SELECT playerID, firstName, lastName, phone, email, team.teamName as 'Team' " \
                 "FROM Players LEFT JOIN Teams team on Players.teamID = team.teamID"
@@ -140,6 +150,7 @@ def players():
         team_results = execute_query(db_connection, team_query).fetchall()
 
         return render_template('players.html', Players_Rows=result, teams=team_results)
+    # Insert player info
     elif request.method == 'POST':
         fname = request.form['fninput']
         lname = request.form['lninput']
@@ -175,7 +186,7 @@ def players():
 @webapp.route('/update_players/<int:player_id>', methods=['POST', 'GET'])
 def update_players(player_id):
     db_connection = connect_to_database()
-    # display existing data
+    # Display existing player info
     if request.method == 'GET':
         player_query = "SELECT playerID, firstName, lastName, phone, email, team.teamName as 'Team' " \
                        "FROM Players LEFT JOIN Teams team on Players.teamID = team.teamID " \
@@ -189,6 +200,7 @@ def update_players(player_id):
         object_name = 'Players'
         return render_template('coachplayer_update.html', Previous_Page=prev_page,
                                obj_main=player_result, teams=team_results, obj_name=object_name)
+    # Update player info
     elif request.method == 'POST':
         playerid = request.form['PlayersID']
         fname = request.form['fninput']
@@ -233,6 +245,7 @@ def delete_players(player_id):
     name_data = (player_id,)
     player_firstname = execute_query(db_connection, name_query, name_data).fetchone()
 
+    # SQL query to delete player
     query = "DELETE FROM Players WHERE playerID = %s"
     data = (player_id,)
 
@@ -247,10 +260,12 @@ def delete_players(player_id):
 @webapp.route('/referees', methods=['POST', 'GET'])
 def referees():
     db_connection = connect_to_database()
+    # Display all referees
     if request.method == 'GET':
         query = "SELECT refereeID, firstName, lastName, phone, email FROM Referees"
         result = execute_query(db_connection, query).fetchall()
         return render_template('referees.html', Referee_Rows=result)
+    # Insert referee data
     elif request.method == 'POST':
         fname = request.form['fninput']
         lname = request.form['lninput']
@@ -279,7 +294,7 @@ def referees():
 @webapp.route('/update_referees/<int:referee_id>', methods=['POST', 'GET'])
 def update_referees(referee_id):
     db_connection = connect_to_database()
-    # display existing data
+    # Display selected referee data
     if request.method == 'GET':
         referee_query = "SELECT refereeID, firstName, lastName, phone, email " \
                         "FROM Referees WHERE refereeID = %s" % referee_id
@@ -289,6 +304,7 @@ def update_referees(referee_id):
         object_name = 'Referees'
         return render_template('referee_update.html', Previous_Page=prev_page,
                                obj_main=referee_result, obj_name=object_name)
+    # Update referee data
     elif request.method == 'POST':
         refereeid = request.form['RefereesID']
         fname = request.form['fninput']
@@ -322,6 +338,7 @@ def update_referees(referee_id):
 def delete_referees(referee_id):
     """deletes a referee with the given id"""
     db_connection = connect_to_database()
+    # SQL query to select referee
     name_query = "SELECT firstName FROM Referees WHERE refereeID = %s"
     name_data = (referee_id,)
     referee_firstname = execute_query(db_connection, name_query, name_data).fetchone()
@@ -329,6 +346,7 @@ def delete_referees(referee_id):
     games_referees_delete_query = "DELETE FROM Games_Referees where refereeID = %s"
     execute_query(db_connection, games_referees_delete_query, name_data)
 
+    # SQL query to delete selected referee
     query = "DELETE FROM Referees WHERE refereeID = %s"
     data = (referee_id,)
 
@@ -343,6 +361,7 @@ def delete_referees(referee_id):
 @webapp.route('/teams', methods=['POST', 'GET'])
 def teams():
     db_connection = connect_to_database()
+    # Display team information
     if request.method == 'GET':
         query = "select teamID as ID, teamName as Team, (SELECT count(*) FROM Games " \
                 "where (homeTeamID = teamID and homeTeamScore > awayTeamScore) " \
@@ -354,6 +373,7 @@ def teams():
                 "ORDER by teamName;"
         result = execute_query(db_connection, query).fetchall()
         return render_template('teams.html', rows=result)
+    # Insert team information
     elif request.method == 'POST':
         tname = request.form['teaminput']
 
@@ -375,7 +395,7 @@ def teams():
 @webapp.route('/update_teams/<int:team_id>', methods=['POST', 'GET'])
 def update_teams(team_id):
     db_connection = connect_to_database()
-
+    # Display selected team info
     if request.method == 'GET':
         teams_query = 'SELECT teamID, teamName FROM Teams where teamID = %s'
         data = (team_id,)
@@ -417,8 +437,8 @@ def delete_teams(id):
 
     name_query = "SELECT teamName FROM Teams WHERE teamID = %s"
     team_name = execute_query(db_connection, name_query, data).fetchone()
-    print(team_name)
 
+    # SQL queries to delete teams
     query = "DELETE FROM Teams WHERE teamID = %s"
     data = (id,)
 
@@ -460,6 +480,7 @@ def leaguestandings():
 @webapp.route('/games', methods=['POST', 'GET'])
 def games():
     db_connection = connect_to_database()
+    # Show game data
     if request.method == 'GET':
         query = "select gameID, team1.teamName as 'Home Team', " \
                 "team2.teamName as 'Away Team', " \
@@ -476,6 +497,7 @@ def games():
                 "join Teams team1 on game.homeTeamID = team1.teamID " \
                 "join Teams team2 on game.awayTeamID = team2.teamID " \
                 "order by game.gameID;"
+
         result = execute_query(db_connection, query).fetchall()
         query = "SELECT teamID, teamName from Teams;"
         home_teams = execute_query(db_connection, query).fetchall()
@@ -486,6 +508,7 @@ def games():
         return render_template('games.html', rows=result, homeTeams=home_teams, awayTeams=away_teams,
                                refereeList=refs)
     elif request.method == 'POST':
+        # Insert game data
         date = request.form['dateinput']
         hometeam = int(request.form['homeinput'])
         awayteam = int(request.form['awayinput'])
@@ -505,6 +528,7 @@ def games():
 
 @webapp.route('/games_needing_teams', methods=['POST', 'GET'])
 def games_needing_teams():
+    """filter for games needing teams"""
     db_connection = connect_to_database()
     if request.method == 'GET':
         query = "select gameID, ifNull(team1.teamName, 'NONE') as 'Home Team', " \
@@ -552,6 +576,7 @@ def games_needing_teams():
 
 @webapp.route('/games_needing_referee', methods=['POST', 'GET'])
 def games_needing_referee():
+    """filter for games needing referee(s)"""
     db_connection = connect_to_database()
     if request.method == 'GET':
         query = "select gameID, ifNull(team1.teamName, 'NONE') as 'Home Team', " \
