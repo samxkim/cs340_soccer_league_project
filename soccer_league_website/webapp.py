@@ -36,10 +36,16 @@ def coaches():
         email_verify = "SELECT count(email) FROM Coaches WHERE email = '%s'" % email
         email_verify_result = execute_query(db_connection, email_verify).fetchone()
         if phone_verify_result[0] == 0 and email_verify_result[0] == 0:
-            query = 'INSERT INTO Coaches (firstName, lastName, phone, email, teamID) ' \
-                    'VALUES (%s,%s,%s,%s,(SELECT teamID FROM Teams WHERE teamID = %s))'
-            data = (fname, lname, phone, email, team)
-            execute_query(db_connection, query, data)
+            if team == "NULL_TEAM":
+                query = 'INSERT INTO Coaches (firstName, lastName, phone, email, teamID) ' \
+                        'VALUES (%s,%s,%s,%s,NULL)'
+                data = (fname, lname, phone, email)
+                execute_query(db_connection, query, data)
+            else:
+                query = 'INSERT INTO Coaches (firstName, lastName, phone, email, teamID) ' \
+                        'VALUES (%s,%s,%s,%s,(SELECT teamID FROM Teams WHERE teamID = %s))'
+                data = (fname, lname, phone, email, team)
+                execute_query(db_connection, query, data)
 
             prev_page = 'coaches'
             object_added = 'Coach'
@@ -82,10 +88,16 @@ def update_coaches(coach_id):
         email_verify_result = execute_query(db_connection, email_verify).fetchone()
 
         if phone_verify_result[0] == 0 and email_verify_result[0] == 0:
-            query = "UPDATE Coaches SET firstName = %s, lastName = %s, phone = %s, email = %s, teamID = %s " \
-                    "WHERE coachID = %s"
-            data = (fname, lname, phone, email, team, coachid)
-            result = execute_query(db_connection, query, data)
+            if team == "NULL_TEAM":
+                query = "UPDATE Coaches SET firstName = %s, lastName = %s, phone = %s, email = %s, teamID = NULL " \
+                        "WHERE coachID = %s"
+                data = (fname, lname, phone, email, coachid)
+                result = execute_query(db_connection, query, data)
+            else:
+                query = "UPDATE Coaches SET firstName = %s, lastName = %s, phone = %s, email = %s, teamID = %s " \
+                        "WHERE coachID = %s"
+                data = (fname, lname, phone, email, team, coachid)
+                result = execute_query(db_connection, query, data)
 
             prev_page = 'coaches'
             object_name = 'Coaches'
@@ -142,10 +154,16 @@ def players():
         email_verify_result = execute_query(db_connection, email_verify).fetchone()
 
         if phone_verify_result[0] == 0 and email_verify_result[0] == 0:
-            query = 'INSERT INTO Players (firstName, lastName, phone, email, teamID) ' \
-                    'VALUES (%s,%s,%s,%s,(SELECT teamID FROM Teams WHERE teamID = %s))'
-            data = (fname, lname, phone, email, team)
-            execute_query(db_connection, query, data)
+            if team == "NULL_TEAM":
+                query = 'INSERT INTO Players (firstName, lastName, phone, email, teamID) ' \
+                        'VALUES (%s,%s,%s,%s,NULL)'
+                data = (fname, lname, phone, email)
+                execute_query(db_connection, query, data)
+            else:
+                query = 'INSERT INTO Players (firstName, lastName, phone, email, teamID) ' \
+                        'VALUES (%s,%s,%s,%s,(SELECT teamID FROM Teams WHERE teamID = %s))'
+                data = (fname, lname, phone, email, team)
+                execute_query(db_connection, query, data)
             prev_page = 'players'
             object_added = 'Player'
             return render_template('added_successful.html', Previous_Page=prev_page, obj_add=object_added)
@@ -186,10 +204,16 @@ def update_players(player_id):
         email_verify_result = execute_query(db_connection, email_verify).fetchone()
 
         if phone_verify_result[0] == 0 and email_verify_result[0] == 0:
-            query = "UPDATE Players SET firstName = %s, lastName = %s, phone = %s, email = %s, teamID = %s " \
-                    "WHERE playerID = %s"
-            data = (fname, lname, phone, email, team, playerid)
-            result = execute_query(db_connection, query, data)
+            if team == "NULL_TEAM":
+                query = "UPDATE Players SET firstName = %s, lastName = %s, phone = %s, email = %s, teamID = NULL " \
+                        "WHERE playerID = %s"
+                data = (fname, lname, phone, email, playerid)
+                result = execute_query(db_connection, query, data)
+            else:
+                query = "UPDATE Players SET firstName = %s, lastName = %s, phone = %s, email = %s, teamID = %s " \
+                        "WHERE playerID = %s"
+                data = (fname, lname, phone, email, team, playerid)
+                result = execute_query(db_connection, query, data)
 
             prev_page = 'players'
             object_name = 'Players'

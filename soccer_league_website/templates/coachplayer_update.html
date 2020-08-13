@@ -20,6 +20,7 @@
             <option value="{{ team[0] }}">{{ team[1] }}</option>
         {% endif %}
     {% endfor %}
+    <option value="NULL_TEAM">NO TEAM</option>
 </select><br>
     <input type="submit" value="Submit">
     <a href="{{ url_for(Previous_Page) }}">Back</a>
