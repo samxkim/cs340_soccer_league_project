@@ -729,5 +729,5 @@ def another_heh_error(e):
 
 
 # To start flask locally
-if __name__ == '__main__':
-    webapp.run(debug=True)
+# if __name__ == '__main__':
+#     webapp.run(debug=True)
